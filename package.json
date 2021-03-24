@@ -45,5 +45,10 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@peculiar/webcrypto": "^1.1.6",
+    "@transmute/did-key-cipher": "0.2.1-unstable.31",
+    "@transmute/did-key-ed25519": "0.2.1-unstable.31",
+    "@transmute/did-key-x25519": "0.2.1-unstable.31"
+  }
 }
