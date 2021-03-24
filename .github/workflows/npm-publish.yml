@@ -1,0 +1,23 @@
+name: NPM Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+          registry-url: https://registry.npmjs.org/
+      - run: yarn install --frozen-lockfile --ignore-scripts
+      - run: yarn build
+      - run: cp -rf package.json dist
+      - run: cp -rf README.md dist
+      - run: cp -rf src/types.json dist
+      - run: cd dist && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

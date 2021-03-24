@@ -1,0 +1,20 @@
+name: Build and Tests
+
+on: [pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ibnesayeed/setup-ipfs@0.6.0
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+        with:
+          run_daemon: true
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+      - run: yarn install --frozen-lockfile --ignore-scripts
+      - run: yarn build
+      - run: yarn test
+      - run: yarn run-example
