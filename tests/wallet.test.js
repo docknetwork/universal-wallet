@@ -43,6 +43,7 @@ describe('Wallet - Basic functionality', () => {
   test('Can lock a wallet', async () => {
     await wallet.lock(WalletPassword);
     expect(wallet.status).toBe(DockWallet.Locked);
+    expect(wallet.contents[0].ciphertext).toBeDefined();
   });
 
   test('Can not add or remove when a wallet is locked', () => {
@@ -53,6 +54,7 @@ describe('Wallet - Basic functionality', () => {
   test('Can unlock a wallet', async () => {
     await wallet.unlock(WalletPassword);
     expect(wallet.status).toBe(DockWallet.Unlocked);
+    expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(true);
   });
 
   test('Unlocked JSON representation', () => {

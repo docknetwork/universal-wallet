@@ -1,8 +1,5 @@
-import MyIndex from '../src/index';
-
 async function main() {
-  const index = new MyIndex();
-  console.log('index', index);
+  console.log('TODO!');
 }
 
 main()

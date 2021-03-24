@@ -14,7 +14,7 @@ export async function passwordToKey(
       'deriveBits',
       'deriveKey',
     ])
-    .then(key => crypto.subtle.deriveKey(
+    .then((key) => crypto.subtle.deriveKey(
       {
         name: 'PBKDF2',
         salt: saltBuffer,
@@ -32,8 +32,8 @@ export async function passwordToKey(
       // this web crypto object will only be allowed for these functions
       ['encrypt', 'decrypt'],
     ))
-    .then(webKey => crypto.subtle.exportKey('raw', webKey))
-    .then(buffer => new Uint8Array(buffer));
+    .then((webKey) => crypto.subtle.exportKey('raw', webKey))
+    .then((buffer) => new Uint8Array(buffer));
 }
 
 export async function getKeypairFromDerivedKey(derivedKey) {

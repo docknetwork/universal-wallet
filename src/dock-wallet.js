@@ -25,16 +25,16 @@ function ensureWalletUnlocked(wallet) {
   }
 }
 
-/** Library class is defined here */
+/** The Dock Wallet */
 class DockWallet {
   /**
    * Creates a new unlocked wallet instance with empty contents
    * @constructor
    */
-  constructor(id) {
-    this.id = id || WALLET_DEFAULT_ID;
-    this.contents = [];
+  constructor(id = WALLET_DEFAULT_ID) {
+    this.id = id;
     this.status = DockWallet.Unlocked;
+    this.contents = [];
   }
 
   /**
@@ -58,7 +58,7 @@ class DockWallet {
    */
   remove(contentId) {
     ensureWalletUnlocked(this);
-    this.contents = this.contents.filter(i => i.id !== contentId);
+    this.contents = this.contents.filter((i) => i.id !== contentId);
     return this;
   }
 
