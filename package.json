@@ -39,6 +39,8 @@
     "watch": "rollup -c -w",
     "run-example": "npx babel-node example/index.js",
     "test": "jest --verbose ./tests",
+    "test-keys": "jest --verbose ./tests/keys",
+    "test-creds": "jest --verbose ./tests/credentials",
     "docs": "mkdir out && touch out/.nojekyll && jsdoc src -r -c .jsdoc -d out/reference",
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
@@ -46,6 +48,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "@docknetwork/sdk": "0.3.16",
     "@peculiar/webcrypto": "^1.1.6",
     "@transmute/did-key-cipher": "0.2.1-unstable.31",
     "@transmute/did-key-ed25519": "0.2.1-unstable.31",

@@ -2,6 +2,7 @@ import DockWallet from '../src/index';
 
 import {
   WALLET_LOCKED,
+  WALLET_UNLOCKED,
   WALLET_CONTENT_ITEM,
   WalletPassword,
 } from './constants';
@@ -35,7 +36,7 @@ const unlockedWalletObject = {
 describe('Wallet - Basic functionality', () => {
   const wallet = new DockWallet(WALLET_DEFAULT_ID);
 
-  test('Can add content', () => {
+  test('Can add a credential', () => {
     wallet.add(WALLET_CONTENT_ITEM);
     expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(true);
   });
@@ -62,7 +63,7 @@ describe('Wallet - Basic functionality', () => {
     expect(walletJSON).toMatchObject(unlockedWalletObject);
   });
 
-  test('Can remove content', () => {
+  test('Can remove a credential', () => {
     wallet.remove(WALLET_CONTENT_ITEM.id);
     expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(false);
   });
@@ -74,7 +75,7 @@ describe('Wallet - Import/Export', () => {
   test('Can import, export and re-import a wallet', async () => {
     // Import wallet from file
     await wallet.import(WALLET_LOCKED, WalletPassword);
-    expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(true);
+    expect(wallet.has(WALLET_UNLOCKED.contents[0].id)).toBe(true);
 
     // Get exported credential
     const exportedWallet = await wallet.export(WalletPassword);
@@ -83,6 +84,6 @@ describe('Wallet - Import/Export', () => {
     // Try to reimport it
     const importedWallet = new DockWallet();
     await importedWallet.import(exportedWallet, WalletPassword);
-    expect(importedWallet.has(WALLET_CONTENT_ITEM.id)).toBe(true);
+    expect(importedWallet.has(WALLET_UNLOCKED.contents[0].id)).toBe(true);
   });
 });
