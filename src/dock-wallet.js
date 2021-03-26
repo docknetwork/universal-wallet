@@ -8,7 +8,7 @@ import {
 import { passwordToKeypair } from './methods/password';
 
 import VerifiableCredential from '@docknetwork/sdk/verifiable-credential';
-import { issueCredential } from '@docknetwork/sdk/utils/vc/credentials';
+import { issueCredential, verifyCredential } from '@docknetwork/sdk/utils/vc/credentials';
 
 import {
   WALLET_DEFAULT_CONTEXT,
@@ -70,12 +70,28 @@ function getKeypairDocFromWallet(wallet, controller) {
 import { Ed25519KeyPair } from '@transmute/did-key-ed25519';
 
 function getKeypairFromDoc({ id, type, controller, publicKeyBase58, privateKeyBase58 }) {
+  // TOOD: proper type detection, move this method
   return new Ed25519KeyPair({
     id,
     controller,
     publicKeyBase58,
     privateKeyBase58,
   });
+}
+
+function getKeypairFromController(wallet, controller) {
+  // Determine keypair object from controller input
+  const keyPairDocument = getKeypairDocFromWallet(wallet, controller);
+  if (!keyPairDocument) {
+    throw new Error(`Unable to find keypair in wallet contents with controller: ${controller}`);
+  }
+
+  // Get keypair instance from document
+  const keyPairInstance = getKeypairFromDoc(keyPairDocument);
+  if (!keyPairInstance) {
+    throw new Error(`Unable to determine keypair instance from document`);
+  }
+  return keyPairInstance;
 }
 
 /** The Dock Wallet */
@@ -211,8 +227,21 @@ class DockWallet {
     // TODO: Implement and define params
   }
 
-  verify() {
-    // TODO: Implement and define params
+  async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options
+
+    // TODO: we need to construct a did resolver that can resolve did:keys internally? and/or external dids
+
+
+    const result = await verifyCredential(credentialOrPresentation, {
+      resolver: null,
+      compactProof: true,
+      forceRevocationCheck: false,
+      // documentLoader: null,
+      ...options,
+    });
+
+    console.log('result', result);
+    return result;
   }
 
   /**
@@ -222,31 +251,13 @@ class DockWallet {
    * @return {object} An unlocked wallet JSON-LD representation
    */
   async issue(credential, options) {
-    // example options object:
-    //  {
-    //   verificationMethod: "did:example:1234#key-1",
-    //   proofPurpose: "assertionMethod",
-    //   created: "2017-06-18T21:19:10Z"
-    //   controller: "did:example:1234",
-    //   domain: "https://www.example.com",
-    //   challenge: "0b4e419a-1410-4739-a58d-b37f4db10181",
-    //   proofType: "Ed25519Signature2018"
-    //  }
+    // TODO: support more options? SDK doesnt seem to need whats in the spec
     const {
       controller,
     } = options;
 
-    // Determine keypair object from controller input
-    const keyPairDocument = getKeypairDocFromWallet(this, controller);
-    if (!keyPairDocument) {
-      throw new Error(`Unable to find keypair in wallet contents with controller: ${controller}`);
-    }
-
-    // Get keypair instance from document
-    const keyPairInstance = getKeypairFromDoc(keyPairDocument);
-    if (!keyPairInstance) {
-      throw new Error(`Unable to determine keypair instance from document`);
-    }
+    // Get keypair instance from controller if it exists in wallet
+    const keyPairInstance = getKeypairFromController(this, controller);
 
     // Create keypair document and signer
     const keyDoc = keyPairInstance.toKeyPair(true);
