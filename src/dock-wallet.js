@@ -228,19 +228,13 @@ class DockWallet {
   }
 
   async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options
-
-    // TODO: we need to construct a did resolver that can resolve did:keys internally? and/or external dids
-
-
+    // TODO: should we have a default did resolver?
     const result = await verifyCredential(credentialOrPresentation, {
       resolver: null,
       compactProof: true,
       forceRevocationCheck: false,
-      // documentLoader: null,
       ...options,
     });
-
-    console.log('result', result);
     return result;
   }
 
@@ -251,9 +245,10 @@ class DockWallet {
    * @return {object} An unlocked wallet JSON-LD representation
    */
   async issue(credential, options) {
-    // TODO: support more options? SDK doesnt seem to need whats in the spec
     const {
       controller,
+      issuanceDate,
+      verificationMethod,
     } = options;
 
     // Get keypair instance from controller if it exists in wallet
@@ -264,8 +259,8 @@ class DockWallet {
     const signer = keyPairInstance.signer();
 
     // Set verification method
-    if (options.verificationMethod) {
-      keyDoc.id = options.verificationMethod;
+    if (verificationMethod) {
+      keyDoc.id = verificationMethod;
     } else {
       const pkEncoded = keyDoc.controller.split(':')[2];
       keyDoc.id = `${keyDoc.controller}#${pkEncoded}`;
@@ -280,7 +275,7 @@ class DockWallet {
 
     // Assign credential date
     if (!credential.issuanceDate) {
-      credential.issuanceDate = options.issuanceDate || new Date().toISOString();
+      credential.issuanceDate = issuanceDate || new Date().toISOString();
     }
 
     // Sign the VC

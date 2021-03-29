@@ -39,6 +39,10 @@ describe('Wallet - Credential issuance and verification', () => {
     const verifyResult = await wallet.verify(signedVC, {
       resolver,
     });
+    if (!verifyResult.verified) {
+      console.error(verifyResult.error);
+      verifyResult.error.errors.forEach(error => console.error('verifyResult error:', error));
+    }
     expect(verifyResult.verified).toBe(true);
   });
 });
