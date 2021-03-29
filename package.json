@@ -47,11 +47,18 @@
   "jest": {
     "testEnvironment": "node"
   },
+  "resolutions": {
+    "crypto-ld": "3.7.0",
+    "node-forge": "0.9.2"
+  },
   "dependencies": {
     "@docknetwork/sdk": "0.3.16",
     "@peculiar/webcrypto": "^1.1.6",
     "@transmute/did-key-cipher": "0.2.1-unstable.31",
     "@transmute/did-key-ed25519": "0.2.1-unstable.31",
-    "@transmute/did-key-x25519": "0.2.1-unstable.31"
+    "@transmute/did-key-x25519": "0.2.1-unstable.31",
+    "did-method-key": "^0.7.0",
+    "crypto-ld": "3.7.0",
+    "node-forge": "0.9.2"
   }
 }

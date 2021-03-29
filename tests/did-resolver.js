@@ -1,13 +1,16 @@
 import DIDResolver from '@docknetwork/sdk/did-resolver';
 
-export default class TestDIDResolver extends DIDResolver {
+const didKeyDriver = require('did-method-key').driver();
+
+// this resolve should be able to resolve did:key dids
+// perhaps this would be a good addition to the SDK?
+export default class DIDKeyResolver extends DIDResolver {
   constructor() {
     super();
   }
 
   async resolve(did) {
-    console.log('resolve', did);
-
-    return {};
+    const didDocument = await didKeyDriver.get({did});
+    return didDocument;
   }
 }

@@ -46,5 +46,6 @@ export async function getKeypairFromDerivedKey(derivedKey) {
 
 export async function passwordToKeypair(password) {
   const derivedKey = await passwordToKey(password);
-  return await getKeypairFromDerivedKey(derivedKey);
+  const keypair = await getKeypairFromDerivedKey(derivedKey);
+  return keypair;
 }

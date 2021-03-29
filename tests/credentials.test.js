@@ -12,14 +12,15 @@ import {
 } from './constants';
 
 // For this test we need a custom DID resolver since we're using example data
-import TestDIDResolver from './did-resolver';
+import DIDKeyResolver from './did-resolver';
 
 describe('Wallet - Credential issuance and verification', () => {
   // Create a wallet with our issuer key
   const wallet = new DockWallet();
   wallet.add(KEY_LOCAL);
 
-  const resolver = new TestDIDResolver();
+  // Create a resolver, for these tests we only use did:key methods so this works
+  const resolver = new DIDKeyResolver();
 
   let signedVC;
 
@@ -38,7 +39,6 @@ describe('Wallet - Credential issuance and verification', () => {
     const verifyResult = await wallet.verify(signedVC, {
       resolver,
     });
-    console.log('verifyResult', verifyResult.error)
     expect(verifyResult.verified).toBe(true);
   });
 });

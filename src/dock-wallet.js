@@ -263,6 +263,14 @@ class DockWallet {
     const keyDoc = keyPairInstance.toKeyPair(true);
     const signer = keyPairInstance.signer();
 
+    // Set verification method
+    if (options.verificationMethod) {
+      keyDoc.id = options.verificationMethod;
+    } else {
+      const pkEncoded = keyDoc.controller.split(':')[2];
+      keyDoc.id = `${keyDoc.controller}#${pkEncoded}`;
+    }
+
     // SDK requires keypair property with sign method
     keyDoc.keypair = {
       sign: async function(data) { // SDK mutates sign so that it passes data not object, this hack fixes that
