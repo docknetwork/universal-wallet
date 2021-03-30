@@ -3,10 +3,12 @@ import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */
 class EDVHTTPStorageInterface extends StorageInterface {
-  constructor({ url, keys }) {
+  constructor({ url, keys, httpsAgent, defaultHeaders }) {
     super();
     this.serverUrl = url;
     this.keys = keys;
+    this.httpsAgent = httpsAgent;
+    this.defaultHeaders = defaultHeaders;
     if (!keys || !keys.keyAgreementKey || !keys.hmac) {
       throw new Error('EDVHTTPStorageInterface requires keys object with keyAgreementKey and hmac');
     }
@@ -16,15 +18,45 @@ class EDVHTTPStorageInterface extends StorageInterface {
     // ?
   }
 
+  insert() {
+    // TODO: this
+  }
+
+  update() {
+    // TODO: this
+  }
+
+  delete() {
+    // TODO: this
+  }
+
+  find() {
+    // TODO: this
+  }
+
+  ensureIndex() {
+    // TODO: this
+  }
+
+  updateIndex() {
+    // TODO: this
+  }
+
   connectTo(id) {
     if (this.client) {
       throw new Error(`Already connected`);
     }
 
     const { keyAgreementKey, hmac } = this.keys;
-    this.client = new EdvClient({id, keyAgreementKey, hmac});
 
-    // TODO: do we need to set this.client.keyResolver:?
+    this.client = new EdvClient({
+      httpsAgent: this.httpsAgent,
+      defaultHeaders: this.defaultHeaders,
+      keyAgreementKey,
+      hmac,
+      id,
+      keyResolver: null, // TODO: do we need to pass this? probably
+    });
   }
 
   async getConfig(id) {

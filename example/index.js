@@ -10,7 +10,7 @@ async function main() {
   const keys = {
     keyAgreementKey,
     hmac: {
-      id: 'https://example.com/kms/67891',
+      id: 'https://example.com/kms/67891', // TODO: assign proper key
       type: 'Sha256HmacKey2019'
     }
   };
