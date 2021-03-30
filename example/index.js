@@ -1,25 +1,25 @@
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import DockWallet from '../src/dock-wallet';
+import keyAgreementKey from '../tests/constants/keys/key-agreement-key.json';
 
 // Currently this example requires that you run a secure data vault server
 async function main() {
-  // TODO: get a mock keyagreementkey to send to the server
-
+  // Get mock keys
+  // Ideally you would use a key management system
+  // See readme for more: https://github.com/digitalbazaar/edv-client
   const keys = {
-    keyAgreementKey: {
-      id: 'test',
-      type: 'test',
-    },
+    keyAgreementKey,
     hmac: {
-      id: 'test',
-      type: 'test',
+      id: 'https://example.com/kms/67891',
+      type: 'Sha256HmacKey2019'
     }
   };
 
+  // Create a storage interface pointing to a local server
   const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
   const remoteEDV = await storageInterface.createEdv({
-    controller: 'did:key:test3',
-    referenceId: 'primary',
+    controller: keyAgreementKey.controller,
+    referenceId: 'primary', // TODO: Setting referenceId because there can only be one primary
   });
 
   console.log('EDV Created:', remoteEDV);
