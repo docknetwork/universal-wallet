@@ -16,15 +16,36 @@ class EDVHTTPStorageInterface extends StorageInterface {
     // ?
   }
 
-  connectTo(edvId) {
+  connectTo(id) {
     if (this.client) {
       throw new Error(`Already connected`);
     }
 
     const { keyAgreementKey, hmac } = this.keys;
-    this.client = new EdvClient({id: edvId, keyAgreementKey, hmac});
+    this.client = new EdvClient({id, keyAgreementKey, hmac});
 
     // TODO: do we need to set this.client.keyResolver:?
+  }
+
+  async getConfig(id) {
+    const remoteConfig = await EdvClient.getConfig({
+      url: `${this.serverUrl}/edvs`,
+      id,
+    });
+    return remoteConfig;
+  }
+
+  async findConfigFor(controller, referenceId = 'primary') {
+    try {
+      const remoteConfig = await EdvClient.findConfig({
+        url: `${this.serverUrl}/edvs`,
+        controller,
+        referenceId,
+      });
+      return remoteConfig;
+    } catch (e) {
+      return null;
+    }
   }
 
   /*

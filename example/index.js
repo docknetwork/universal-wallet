@@ -15,16 +15,25 @@ async function main() {
     }
   };
 
+  const { controller } = keyAgreementKey;
+
   // Create a storage interface pointing to a local server
   const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
-  const remoteEDV = await storageInterface.createEdv({
-    controller: keyAgreementKey.controller,
-    referenceId: 'primary', // TODO: Setting referenceId because there can only be one primary
-  });
 
-  console.log('EDV Created:', remoteEDV);
-  console.log('Connecting to the EDV...');
-  storageInterface.connectTo(remoteEDV)
+  // Try to get existing primary reference for our controller
+  const existingConfig = await storageInterface.findConfigFor(controller);
+
+  // If it doesn't exist, let's create it
+  let edvId = existingConfig.id;
+  if (!edvId) {
+    edvId = await storageInterface.createEdv({
+      controller: controller,
+      referenceId: 'primary', // TODO: Setting referenceId because there can only be one primary
+    });
+  }
+
+  console.log('EDV found/created:', edvId, ' - connecting to it');
+  storageInterface.connectTo(edvId)
 
   console.log('TODO:', storageInterface);
   // TODO: create secure storage vault instance
