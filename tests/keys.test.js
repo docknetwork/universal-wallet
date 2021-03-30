@@ -15,4 +15,16 @@ describe('Wallet - Key storage and usage', () => {
     wallet.add(KEY_LOCAL);
     expect(wallet.has(KEY_LOCAL.id)).toBe(true);
   });
+
+  // test('Can add a JSON web key', () => {
+  //   // TODO: this
+  // });
+  //
+  // test('Can add a remote KMS key', () => {
+  //   // TODO: this
+  // });
+  //
+  // test('Can add a hardware key', () => {
+  //   // TODO: this
+  // });
 });
