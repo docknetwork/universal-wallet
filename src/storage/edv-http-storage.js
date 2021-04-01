@@ -23,6 +23,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
         console.log('Debug key resolve:', id)
         if (id === this.keys.keyAgreementKey.id) {
           return this.keys.keyAgreementKey;
+        } else if (id === this.keys.hmac.id) {
+          return this.keys.hmac;
         }
         throw new Error(`Key ${id} not found`);
       };
@@ -58,8 +60,9 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return readResult;
   }
 
-  async update({ document, invocationSigner, capability }) {
+  async update({ document, invocationSigner, capability, recipients }) {
     const updateResult = await this.client.update({
+      recipients,
       doc: document,
       invocationSigner: invocationSigner || this.invocationSigner,
       capability: capability || this.capability,
@@ -70,18 +73,19 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
   async delete({ document, invocationSigner, capability, recipients }) {
     await this.client.delete({
+      recipients,
       doc: document,
       invocationSigner: invocationSigner || this.invocationSigner,
       capability: capability || this.capability,
-      recipients,
       keyResolver: this.keyResolver,
     });
     this.documents.delete(document.id);
     return document.id;
   }
 
-  async insert({document, invocationSigner, capability}) {
+  async insert({ document, invocationSigner, capability, recipients }) {
     const insertResult = await this.client.insert({
+      recipients,
       doc: document,
       invocationSigner: invocationSigner || this.invocationSigner,
       capability: capability || this.capability,
@@ -122,6 +126,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
     const remoteConfig = await EdvClient.getConfig({
       url: `${this.serverUrl}/edvs`,
       id,
+      httpsAgent: this.httpsAgent,
+      headers: this.defaultHeaders,
     });
     return remoteConfig;
   }

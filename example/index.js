@@ -42,6 +42,8 @@ async function main() {
   const storageInterface = new EDVHTTPStorageInterface({
     url: 'http://localhost:8080',
     keys,
+
+    // Passing these here will use as defaults in other calls by default
     invocationSigner,
     capability,
   });

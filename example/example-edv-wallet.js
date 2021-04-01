@@ -22,22 +22,6 @@ import MockKak from '../tests/mock/kak';
 /**
   Currently this example requires that you run a secure data vault server locally
   Idea of a flow:
-    Creation:
-      Create a wallet
-      Add wallet contents
-      Create an EDV
-      Lock the wallet and insert it as an EDV document
-
-    Restoration:
-      Connect to an EDV
-      Retrieve locked, encrypted wallet from EDV document
-      Unlock wallet with password
-      Contents are available
-
-  Problems with this flow:
-    One one document = one wallet encrypted wallet, not sure how sharing and permissions would work in this case. all users would need wallet pass.
-
-  Other idea:
     One document in EDV = One document in the wallet
     Document capabilities can be different depending
     Would need a way to search documents in the EDV
