@@ -1,3 +1,7 @@
+/*
+  EDV HTTP Storage Interface Example
+*/
+
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import DockWallet from '../src/dock-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
@@ -5,36 +9,29 @@ import { getKeypairFromDoc } from '../src/methods/keypairs';
 import keyBase58 from '../tests/constants/keys/key-base58.json';
 import MockHmac from '../tests/mock/hmac';
 import MockKak from '../tests/mock/kak';
-import MockInvoker from '../tests/mock/invoker';
 
-// Currently this example requires that you run a secure data vault server
+// Currently this example requires that you run a secure data vault server locally
 async function main() {
   // Get mock keys
   // Ideally you would use a key management system
   // See readme for more: https://github.com/digitalbazaar/edv-client
-  const hmac = await MockHmac.create();
-  const keyAgreementKey = new MockKak();
-
+  const hmac = await MockHmac.create(); // TODO: replace mock example with actual crypto classes
+  const keyAgreementKey = new MockKak(); // TODO: replace mock example with actual crypto classes
   const keys = {
     keyAgreementKey,
     hmac,
   };
-
-  const { controller } = keyBase58;
-  console.log('Using controller:', controller)
   console.log('Using keys:', keys)
 
-
-  // not sure if data-vault-example supports ed25519 did:keys
-  const invocationSigner = new MockInvoker(keyBase58);
-  // const capability = invocationSigner; // TODO:
-  // const capability = getKeypairFromDoc(keyBase58); // hacky signer
-  // capability.sign = capability.signer().sign;
+  const { controller } = keyBase58;
   const capability = undefined; // use defaults
+  const invocationSigner = getKeypairFromDoc(keyBase58); // hacky mock signer
+  invocationSigner.sign = invocationSigner.signer().sign;
 
   // Create a storage interface pointing to a local server
   const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
 
+  // Create or find primary EDV for this controller
   let edvId;
   try {
     console.log('Creating EDV with controller:', controller)
@@ -46,7 +43,7 @@ async function main() {
     });
   } catch (e) {
     // Try to get existing primary reference for our controller
-    const existingConfig = await storageInterface.findConfigFor(controller);
+    const existingConfig = await storageInterface.findConfigFor(controller); // TODO: pass auth to this method
     edvId = existingConfig && existingConfig.id;
     if (!edvId) {
       console.error('Unable to create or find primary EDV:');
