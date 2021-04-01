@@ -39,7 +39,12 @@ async function main() {
 
   // Create a storage interface pointing to a local server
   // TODO: shall we pass invocationSigner, controller, capability etc here only?
-  const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
+  const storageInterface = new EDVHTTPStorageInterface({
+    url: 'http://localhost:8080',
+    keys,
+    invocationSigner,
+    capability,
+  });
 
   // Create or find primary EDV for this controller
   let edvId;
@@ -47,8 +52,6 @@ async function main() {
     console.log('Creating EDV with controller:', controller)
     edvId = await storageInterface.createEdv({
       sequence: 0, // on init the sequence must be 0 and is required
-      invocationSigner,
-      capability,
       controller,
     });
   } catch (e) {
@@ -76,15 +79,12 @@ async function main() {
   console.log('Creating new EDV document:', document)
   const { id } = await storageInterface.insert({
     document,
-    invocationSigner,
-    capability,
   });
 
   // Read
   console.log(`Document created with ID ${id}, reading it back...`);
   const documentResult = await storageInterface.get({
     id,
-    invocationSigner,
   });
 
   console.log('Read document content:', documentResult.content)
@@ -98,13 +98,10 @@ async function main() {
         someData: 'updated data',
       },
     },
-    invocationSigner,
-    capability,
   });
 
   const documentResultUpdated = await storageInterface.get({
     id,
-    invocationSigner,
   });
   console.log('Documented updated with new content:', documentResultUpdated.content)
 
@@ -112,14 +109,11 @@ async function main() {
   console.log(`Deleting document from EDV...`);
   await storageInterface.delete({
     document: documentResultUpdated,
-    invocationSigner,
-    capability,
   });
 
   // Ensure document now has deleted property if we try to read it
   const documentDeleted = await storageInterface.get({
     id,
-    invocationSigner,
   });
 
   // Finish

@@ -3,12 +3,14 @@ import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */
 class EDVHTTPStorageInterface extends StorageInterface {
-  constructor({ url, keys, httpsAgent, defaultHeaders, keyResolver }) {
+  constructor({ url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver, edvId }) {
     super();
     this.serverUrl = url;
     this.keys = keys;
     this.httpsAgent = httpsAgent;
     this.defaultHeaders = defaultHeaders;
+    this.invocationSigner = invocationSigner;
+    this.capability = capability;
     if (!keys || !keys.keyAgreementKey || !keys.hmac) {
       throw new Error('EDVHTTPStorageInterface requires keys object with keyAgreementKey and hmac');
     }
@@ -25,6 +27,11 @@ class EDVHTTPStorageInterface extends StorageInterface {
         throw new Error(`Key ${id} not found`);
       };
     }
+
+    // Auto connect
+    if (edvId) {
+      this.connectTo(edvId);
+    }
   }
 
   find() {
@@ -39,9 +46,9 @@ class EDVHTTPStorageInterface extends StorageInterface {
         keyAgreementKey: this.client.keyAgreementKey,
         hmac: this.client.hmac,
         keyResolver: this.keyResolver,
-        capability,
         recipients,
-        invocationSigner,
+        invocationSigner: invocationSigner || this.invocationSigner,
+        capability: capability || this.capability,
       });
       this.documents.set(id, newDocument);
     }
@@ -54,8 +61,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
   async update({ document, invocationSigner, capability }) {
     const updateResult = await this.client.update({
       doc: document,
-      invocationSigner,
-      capability,
+      invocationSigner: invocationSigner || this.invocationSigner,
+      capability: capability || this.capability,
       keyResolver: this.keyResolver,
     });
     return updateResult;
@@ -64,8 +71,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
   async delete({ document, invocationSigner, capability, recipients }) {
     await this.client.delete({
       doc: document,
-      invocationSigner,
-      capability,
+      invocationSigner: invocationSigner || this.invocationSigner,
+      capability: capability || this.capability,
       recipients,
       keyResolver: this.keyResolver,
     });
@@ -74,10 +81,10 @@ class EDVHTTPStorageInterface extends StorageInterface {
   }
 
   async insert({document, invocationSigner, capability}) {
-    const insertResult = await this.client.insert(
-      {doc: document,
-      invocationSigner,
-      capability,
+    const insertResult = await this.client.insert({
+      doc: document,
+      invocationSigner: invocationSigner || this.invocationSigner,
+      capability: capability || this.capability,
     });
     return insertResult;
   }
@@ -101,12 +108,12 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
     const { keyAgreementKey, hmac } = this.keys;
     this.client = new EdvClient({
-      httpsAgent: this.httpsAgent,
       defaultHeaders: this.defaultHeaders,
+      keyResolver: this.keyResolver,
+      httpsAgent: this.httpsAgent,
       keyAgreementKey,
       hmac,
       id,
-      keyResolver: this.keyResolver, // TODO: do we need to pass this? probably
     });
     this.documents = new Map();
   }
@@ -140,11 +147,6 @@ class EDVHTTPStorageInterface extends StorageInterface {
    *   node.js `https.Agent` instance to use when making requests.
    * @param {object} [options.headers=undefined] - An optional
    *   headers object to use when making requests.
-   * @param {object} [options.invocationSigner] - An object with an
-   *   `id` property and a `sign` function for signing a capability invocation.
-   * @param {string|object} [options.capability] - A zCap authorizing the
-   *   creation of an EDV. Defaults to a root capability derived from
-   *   the `url` parameter.
    * @returns {Promise<string>} - Resolves to the ID for the created EDV.
    */
   async createEdv({ controller, invocationSigner, capability, httpsAgent, headers, sequence = 0, referenceId = 'primary' }) {
@@ -161,8 +163,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
     try {
       const { id } = await EdvClient.createEdv({
         url: `${this.serverUrl}/edvs`,
-        invocationSigner, // invocationSigner must be passed if controller is DID
-        capability, // capability must be passed if controller is DID
+        invocationSigner: invocationSigner || this.invocationSigner, // invocationSigner must be passed if controller is DID
+        capability: capability || this.capability, // capability must be passed if controller is DID
         httpsAgent,
         headers,
         config,
