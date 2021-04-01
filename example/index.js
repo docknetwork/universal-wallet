@@ -10,7 +10,17 @@ import keyBase58 from '../tests/constants/keys/key-base58.json';
 import MockHmac from '../tests/mock/hmac';
 import MockKak from '../tests/mock/kak';
 
-// Currently this example requires that you run a secure data vault server locally
+/**
+  Currently this example requires that you run a secure data vault server locally
+  The typical flow looks like:
+    Create an invocation signer (a verification key with a sign method)
+    Create capabilities (or leave undefined for default, root level capabilities)
+    Create a storage interface instance
+    Create or use an existing EDV, primary referenceId is default
+    With that EDV ID, call connectTo on the storage interface to initialize an EDV client
+    Call insertDocument on the storage interface, a document with no ID has one generated randomly
+    Call get on the storage interface passing the document ID to decrypt and read the contents
+**/
 async function main() {
   // Get mock keys
   // Ideally you would use a key management system
@@ -29,6 +39,7 @@ async function main() {
   invocationSigner.sign = invocationSigner.signer().sign;
 
   // Create a storage interface pointing to a local server
+  // TODO: shall we pass invocationSigner, controller, capability etc here only?
   const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
 
   // Create or find primary EDV for this controller
@@ -54,11 +65,10 @@ async function main() {
   // Connect the storage interface to the EDV
   console.log('EDV found/created:', edvId, ' - connecting to it');
   storageInterface.connectTo(edvId);
-  storageInterface.ensureIndex({attribute: 'content.indexedKey'});
 
+  // Define the document to store
   const document = {
     content: {
-      indexedKey: 'value1',
       someData: 'hello world',
     },
   };
