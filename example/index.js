@@ -1,9 +1,11 @@
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import DockWallet from '../src/dock-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
-import keyAgreementKey from '../tests/constants/keys/key-agreement-key.json';
+// import keyAgreementKeyJSON from '../tests/constants/keys/key-agreement-key.json';
 import keyBase58 from '../tests/constants/keys/key-base58.json';
 import MockHmac from '../tests/mock/hmac';
+import MockKak from '../tests/mock/kak';
+import MockInvoker from '../tests/mock/invoker';
 
 // Currently this example requires that you run a secure data vault server
 async function main() {
@@ -11,27 +13,47 @@ async function main() {
   // Ideally you would use a key management system
   // See readme for more: https://github.com/digitalbazaar/edv-client
   const hmac = await MockHmac.create();
-  
+  const keyAgreementKey = new MockKak();
+
   const keys = {
     keyAgreementKey,
     hmac,
   };
 
-  const { controller } = keyAgreementKey;
+  const { controller } = keyBase58;
+  console.log('Using controller:', controller)
+  console.log('Using keys:', keys)
+
+
+  // not sure if data-vault-example supports ed25519 did:keys
+  const invocationSigner = new MockInvoker(keyBase58);
+  // const capability = invocationSigner; // TODO:
+
+  // Hacky invocation signer
+  // const capability = getKeypairFromDoc(keyBase58);
+  // capability.sign = capability.signer().sign;
+  const capability = null; // use defaults
 
   // Create a storage interface pointing to a local server
   const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
 
-  // Try to get existing primary reference for our controller
-  const existingConfig = await storageInterface.findConfigFor(controller);
-
-  // If it doesn't exist, let's create it
-  let edvId = existingConfig && existingConfig.id;
-  if (!edvId) {
+  let edvId;
+  try {
+    console.log('Creating EDV with controller:', controller)
     edvId = await storageInterface.createEdv({
-      controller: controller,
-      referenceId: 'primary', // TODO: Setting referenceId because there can only be one primary
+      sequence: 0, // on init the sequence must be 0 and is required
+      invocationSigner,
+      capability,
+      controller,
     });
+  } catch (e) {
+    // Try to get existing primary reference for our controller
+    const existingConfig = await storageInterface.findConfigFor(controller);
+    edvId = existingConfig && existingConfig.id;
+    if (!edvId) {
+      console.error('Unable to create or find primary EDV:');
+      throw e;
+    }
   }
 
   // Connect the storage interface to the EDV
@@ -39,12 +61,15 @@ async function main() {
   storageInterface.connectTo(edvId);
   storageInterface.ensureIndex({attribute: 'content.indexedKey'});
 
-  const keyPairInstance = getKeypairFromDoc(keyBase58);
-  const invocationSigner = keyPairInstance.signer();
-  keyPairInstance.sign = invocationSigner.sign;
-
   const newDocumentId = await storageInterface.genereateDocumentId();
-  await storageInterface.insertDocument(newDocumentId, keyPairInstance);
+  const doc1 = {id: newDocumentId, content: {indexedKey: 'value1'}};
+
+  await storageInterface.insertDocument({
+    doc1,
+    invocationSigner,
+    capability,
+  });
+  console.log('Creating new EDV document:', newDocumentId)
 
   // TODO: insert, update, get documents to put into the wallet
 

@@ -12,6 +12,16 @@ class EDVHTTPStorageInterface extends StorageInterface {
     if (!keys || !keys.keyAgreementKey || !keys.hmac) {
       throw new Error('EDVHTTPStorageInterface requires keys object with keyAgreementKey and hmac');
     }
+
+    // Returns keyAgreementKey, dont think we need any other
+    // TODO: double check this
+    this.keyResolver = ({ id }) => {
+      console.log('Debug key resolve:', id)
+      if (id === this.keys.keyAgreementKey.id) {
+        return this.keys.keyAgreementKey;
+      }
+      throw new Error(`Key ${id} not found`);
+    };
   }
 
   get(documentId) {
@@ -39,26 +49,15 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return doc1Id;
   }
 
-  async insertDocument(docId, invocationSigner) {
-    const doc1 = {id: docId, content: {indexedKey: 'value1'}};
-    console.log('doc1', doc1)
-
-
-    const keyResolver = ({ id }) => {
-      console.log('iud', id, this.keys.keyAgreementKey.id, this.keys.keyAgreementKey)
-      if (id === this.keys.keyAgreementKey.id) {
-        return this.keys.keyAgreementKey;
-      }
-      throw new Error(`Key ${id} not found`);
-    };
-
-
-    // invocationSigner must be a VerificationKey with sign method
-    // const invocationSigner = null; // tODO: need this https://github.com/digitalbazaar/edv-client/blob/4f8f3083156d2351cc506a6f4c40e70de5b7bd00/tests/MockInvoker.js#L14
-    const insertResult = await this.client.insert({doc: doc1, invocationSigner, keyResolver});
-    console.log('insertResult', insertResult)
-    const doc = new EdvDocument({
+  async insertDocument({doc1, invocationSigner, capability}) {
+    const insertResult = await this.client.insert(
+      {doc: doc1,
       invocationSigner,
+      capability,
+    });
+    console.log('insertResult', insertResult)
+
+    const doc = new EdvDocument({
       id: doc1.id,
       keyAgreementKey: this.client.keyAgreementKey,
       hmac: this.client.hmac,
@@ -66,7 +65,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
         id: `${this.client.id}`,
         invocationTarget: `${this.client.id}/documents/${doc1.id}`
       },
-      keyResolver
+      keyResolver: this.keyResolver,
+      invocationSigner, // invocationSigner must be a VerificationKey with sign method
     });
     console.log('doc', doc)
     const docResult = await doc.read();
@@ -86,6 +86,10 @@ class EDVHTTPStorageInterface extends StorageInterface {
       throw new Error(`Already connected`);
     }
 
+    if (!id) {
+      throw new Error('id parameter is required to connect to an EDV');
+    }
+
     const { keyAgreementKey, hmac } = this.keys;
     this.client = new EdvClient({
       httpsAgent: this.httpsAgent,
@@ -93,7 +97,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
       keyAgreementKey,
       hmac,
       id,
-      keyResolver: null, // TODO: do we need to pass this? probably
+      keyResolver: this.keyResolver, // TODO: do we need to pass this? probably
     });
   }
 
@@ -118,14 +122,25 @@ class EDVHTTPStorageInterface extends StorageInterface {
     }
   }
 
-  /*
-  * Creates an EDV and returns its ID
-  */
-  async createEdv({ controller, referenceId = 'primary' }) {
+  /**
+   * Creates a new EDV using the given configuration and returns its ID
+   * TODO: define other params
+   * @param {object} options - The options to use.
+   * @param {httpsAgent} [options.httpsAgent=undefined] - An optional
+   *   node.js `https.Agent` instance to use when making requests.
+   * @param {object} [options.headers=undefined] - An optional
+   *   headers object to use when making requests.
+   * @param {object} [options.invocationSigner] - An object with an
+   *   `id` property and a `sign` function for signing a capability invocation.
+   * @param {string|object} [options.capability] - A zCap authorizing the
+   *   creation of an EDV. Defaults to a root capability derived from
+   *   the `url` parameter.
+   * @returns {Promise<string>} - Resolves to the ID for the created EDV.
+   */
+  async createEdv({ controller, invocationSigner, capability, httpsAgent, headers, sequence = 0, referenceId = 'primary' }) {
     const { keyAgreementKey, hmac } = this.keys;
     const config = {
-      // on init the sequence must be 0 and is required
-      sequence: 0,
+      sequence,
       controller,
       referenceId,
       keyAgreementKey: {id: keyAgreementKey.id, type: keyAgreementKey.type},
@@ -136,12 +151,16 @@ class EDVHTTPStorageInterface extends StorageInterface {
     try {
       const { id } = await EdvClient.createEdv({
         url: `${this.serverUrl}/edvs`,
+        invocationSigner, // invocationSigner must be passed if controller is DID
+        capability, // capability must be passed if controller is DID
+        httpsAgent,
+        headers,
         config,
       });
 
       return id;
     } catch (e) {
-      // TODO: better error parsing
+      // TODO: better error handling
       throw e;
     }
   }
