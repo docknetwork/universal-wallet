@@ -3,7 +3,7 @@ import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */
 class EDVHTTPStorageInterface extends StorageInterface {
-  constructor({ url, keys, httpsAgent, defaultHeaders }) {
+  constructor({ url, keys, httpsAgent, defaultHeaders, keyResolver }) {
     super();
     this.serverUrl = url;
     this.keys = keys;
@@ -15,13 +15,16 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
     // Returns keyAgreementKey, dont think we need any other
     // TODO: double check this
-    this.keyResolver = ({ id }) => {
-      console.log('Debug key resolve:', id)
-      if (id === this.keys.keyAgreementKey.id) {
-        return this.keys.keyAgreementKey;
-      }
-      throw new Error(`Key ${id} not found`);
-    };
+    this.keyResolver = keyResolver;
+    if (!this.keyResolver) {
+      this.keyResolver = ({ id }) => {
+        console.log('Debug key resolve:', id)
+        if (id === this.keys.keyAgreementKey.id) {
+          return this.keys.keyAgreementKey;
+        }
+        throw new Error(`Key ${id} not found`);
+      };
+    }
   }
 
   async get({ id, invocationSigner, capability, recipients }) {
@@ -44,23 +47,33 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return readResult;
   }
 
-  insert() {
-    // TODO: this
+  async update({ document, invocationSigner, capability }) {
+    const updateResult = await this.client.update({
+      doc: document,
+      invocationSigner,
+      capability,
+      keyResolver: this.keyResolver,
+    });
+    return updateResult;
   }
 
-  update() {
-    // TODO: this
-  }
-
-  delete() {
-    // TODO: this
+  async delete({ document, invocationSigner, capability, recipients }) {
+    await this.client.delete({
+      doc: document,
+      invocationSigner,
+      capability,
+      recipients,
+      keyResolver: this.keyResolver,
+    });
+    this.documents.delete(document.id);
+    return document.id;
   }
 
   find() {
     // TODO: this
   }
 
-  async insertDocument({document, invocationSigner, capability}) {
+  async insert({document, invocationSigner, capability}) {
     const insertResult = await this.client.insert(
       {doc: document,
       invocationSigner,
@@ -73,8 +86,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
     this.client.ensureIndex(params);
   }
 
-  updateIndex() {
-    // TODO: this
+  async updateIndex(params) {
+    this.client.updateIndex(params);
   }
 
   connectTo(id) {

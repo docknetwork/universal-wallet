@@ -1,7 +1,6 @@
 /*
   EDV HTTP Storage Interface Example
 */
-
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import DockWallet from '../src/dock-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
@@ -18,7 +17,7 @@ import MockKak from '../tests/mock/kak';
     Create a storage interface instance
     Create or use an existing EDV, primary referenceId is default
     With that EDV ID, call connectTo on the storage interface to initialize an EDV client
-    Call insertDocument on the storage interface, a document with no ID has one generated randomly
+    Call insert on the storage interface, a document with no ID has one generated randomly
     Call get on the storage interface passing the document ID to decrypt and read the contents
 **/
 async function main() {
@@ -75,27 +74,60 @@ async function main() {
 
   // Create
   console.log('Creating new EDV document:', document)
-  const { id } = await storageInterface.insertDocument({
+  const { id } = await storageInterface.insert({
     document,
     invocationSigner,
     capability,
   });
 
-  // read
+  // Read
   console.log(`Document created with ID ${id}, reading it back...`);
-  const { content } = await storageInterface.get({
+  const documentResult = await storageInterface.get({
     id,
     invocationSigner,
   });
 
-  console.log('Read document content:', content)
+  console.log('Read document content:', documentResult.content)
 
-  // TODO: insert, update, get documents to put into the wallet
+  // Update
+  console.log(`Updating document contents...`);
+  await storageInterface.update({
+    document: {
+      ...documentResult,
+      content: {
+        someData: 'updated data',
+      },
+    },
+    invocationSigner,
+    capability,
+  });
 
-  // TODO: create secure storage vault instance
-  // somehow able to load wallet contents
-  // do we query for all contents at the start and load into the wallet?
-  // eg: wallet.import(await getWalletCred(), password);
+  const documentResultUpdated = await storageInterface.get({
+    id,
+    invocationSigner,
+  });
+  console.log('Documented updated with new content:', documentResultUpdated.content)
+
+  // Remove
+  console.log(`Deleting document from EDV...`);
+  await storageInterface.delete({
+    document: documentResultUpdated,
+    invocationSigner,
+    capability,
+  });
+
+  // Ensure document now has deleted property if we try to read it
+  const documentDeleted = await storageInterface.get({
+    id,
+    invocationSigner,
+  });
+
+  // Finish
+  if (documentDeleted.meta.deleted) {
+    console.log(`Document has been deleted, example success!`);
+  } else {
+    console.error(`Document still exists, example failed`, documentDeleted);
+  }
 }
 
 main()
