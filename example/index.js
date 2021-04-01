@@ -28,11 +28,9 @@ async function main() {
   // not sure if data-vault-example supports ed25519 did:keys
   const invocationSigner = new MockInvoker(keyBase58);
   // const capability = invocationSigner; // TODO:
-
-  // Hacky invocation signer
-  // const capability = getKeypairFromDoc(keyBase58);
+  // const capability = getKeypairFromDoc(keyBase58); // hacky signer
   // capability.sign = capability.signer().sign;
-  const capability = null; // use defaults
+  const capability = undefined; // use defaults
 
   // Create a storage interface pointing to a local server
   const storageInterface = new EDVHTTPStorageInterface({ url: 'http://localhost:8080', keys });
@@ -61,19 +59,32 @@ async function main() {
   storageInterface.connectTo(edvId);
   storageInterface.ensureIndex({attribute: 'content.indexedKey'});
 
-  const newDocumentId = await storageInterface.genereateDocumentId();
-  const doc1 = {id: newDocumentId, content: {indexedKey: 'value1'}};
+  const document = {
+    content: {
+      indexedKey: 'value1',
+      someData: 'hello world',
+    },
+  };
 
-  await storageInterface.insertDocument({
-    doc1,
+  // Create
+  console.log('Creating new EDV document:', document)
+  const { id } = await storageInterface.insertDocument({
+    document,
     invocationSigner,
     capability,
   });
-  console.log('Creating new EDV document:', newDocumentId)
+
+  // read
+  console.log(`Document created with ID ${id}, reading it back...`);
+  const { content } = await storageInterface.get({
+    id,
+    invocationSigner,
+  });
+
+  console.log('Read document content:', content)
 
   // TODO: insert, update, get documents to put into the wallet
 
-  console.log('TODO:', storageInterface);
   // TODO: create secure storage vault instance
   // somehow able to load wallet contents
   // do we query for all contents at the start and load into the wallet?

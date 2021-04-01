@@ -24,8 +24,24 @@ class EDVHTTPStorageInterface extends StorageInterface {
     };
   }
 
-  get(documentId) {
-    // ?
+  async get({ id, invocationSigner, capability, recipients }) {
+    if (!this.documents.get(id)) {
+      const newDocument = new EdvDocument({
+        id,
+        client: this.client,
+        keyAgreementKey: this.client.keyAgreementKey,
+        hmac: this.client.hmac,
+        keyResolver: this.keyResolver,
+        capability,
+        recipients,
+        invocationSigner,
+      });
+      this.documents.set(id, newDocument);
+    }
+
+    const doc = this.documents.get(id);
+    const readResult = await doc.read();
+    return readResult;
   }
 
   insert() {
@@ -44,33 +60,13 @@ class EDVHTTPStorageInterface extends StorageInterface {
     // TODO: this
   }
 
-  async genereateDocumentId() {
-    const doc1Id = await EdvClient.generateId();
-    return doc1Id;
-  }
-
-  async insertDocument({doc1, invocationSigner, capability}) {
+  async insertDocument({document, invocationSigner, capability}) {
     const insertResult = await this.client.insert(
-      {doc: doc1,
+      {doc: document,
       invocationSigner,
       capability,
     });
-    console.log('insertResult', insertResult)
-
-    const doc = new EdvDocument({
-      id: doc1.id,
-      keyAgreementKey: this.client.keyAgreementKey,
-      hmac: this.client.hmac,
-      capability: {
-        id: `${this.client.id}`,
-        invocationTarget: `${this.client.id}/documents/${doc1.id}`
-      },
-      keyResolver: this.keyResolver,
-      invocationSigner, // invocationSigner must be a VerificationKey with sign method
-    });
-    console.log('doc', doc)
-    const docResult = await doc.read();
-    console.log('docResult', docResult)
+    return insertResult;
   }
 
   ensureIndex(params) {
@@ -99,6 +95,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
       id,
       keyResolver: this.keyResolver, // TODO: do we need to pass this? probably
     });
+    this.documents = new Map();
   }
 
   async getConfig(id) {
