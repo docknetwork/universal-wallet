@@ -1,6 +1,6 @@
 {
   "@context": ["https://w3id.org/wallet/v1"],
-  "id": "urn:uuid:e8fc7810-9524-11ea-bb37-0242ac130002",
+  "id": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW#z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
   "name": "My Test Key 2",
   "image": "https://via.placeholder.com/150",
   "description" : "For testing only, totally compromised.",

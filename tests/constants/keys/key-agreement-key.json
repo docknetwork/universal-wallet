@@ -1,6 +1,6 @@
 {
   "type": "X25519KeyAgreementKey2019",
-  "id": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW#z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
+  "id": "urn:keyagreementtest",
   "controller": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
   "publicKeyBase58": "6UEPbE7tmxPtph22ATMJb8F8yrhuqAMHCD9uWdNMy3Qk",
   "privateKeyBase58": "8ZTnV2oBt2qBwQ2NTXwqChxq2Xg8tG1Sjv1nkmSW4DY9"

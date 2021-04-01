@@ -1,18 +1,20 @@
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import DockWallet from '../src/dock-wallet';
+import { getKeypairFromDoc } from '../src/methods/keypairs';
 import keyAgreementKey from '../tests/constants/keys/key-agreement-key.json';
+import keyBase58 from '../tests/constants/keys/key-base58.json';
+import MockHmac from '../tests/mock/hmac';
 
 // Currently this example requires that you run a secure data vault server
 async function main() {
   // Get mock keys
   // Ideally you would use a key management system
   // See readme for more: https://github.com/digitalbazaar/edv-client
+  const hmac = await MockHmac.create();
+  
   const keys = {
     keyAgreementKey,
-    hmac: {
-      id: 'https://example.com/kms/67891', // TODO: assign proper key
-      type: 'Sha256HmacKey2019'
-    }
+    hmac,
   };
 
   const { controller } = keyAgreementKey;
@@ -24,7 +26,7 @@ async function main() {
   const existingConfig = await storageInterface.findConfigFor(controller);
 
   // If it doesn't exist, let's create it
-  let edvId = existingConfig.id;
+  let edvId = existingConfig && existingConfig.id;
   if (!edvId) {
     edvId = await storageInterface.createEdv({
       controller: controller,
@@ -32,8 +34,19 @@ async function main() {
     });
   }
 
+  // Connect the storage interface to the EDV
   console.log('EDV found/created:', edvId, ' - connecting to it');
-  storageInterface.connectTo(edvId)
+  storageInterface.connectTo(edvId);
+  storageInterface.ensureIndex({attribute: 'content.indexedKey'});
+
+  const keyPairInstance = getKeypairFromDoc(keyBase58);
+  const invocationSigner = keyPairInstance.signer();
+  keyPairInstance.sign = invocationSigner.sign;
+
+  const newDocumentId = await storageInterface.genereateDocumentId();
+  await storageInterface.insertDocument(newDocumentId, keyPairInstance);
+
+  // TODO: insert, update, get documents to put into the wallet
 
   console.log('TODO:', storageInterface);
   // TODO: create secure storage vault instance
