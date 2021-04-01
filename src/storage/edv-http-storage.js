@@ -27,6 +27,10 @@ class EDVHTTPStorageInterface extends StorageInterface {
     }
   }
 
+  find() {
+    // TODO: this
+  }
+
   async get({ id, invocationSigner, capability, recipients }) {
     if (!this.documents.get(id)) {
       const newDocument = new EdvDocument({
@@ -67,10 +71,6 @@ class EDVHTTPStorageInterface extends StorageInterface {
     });
     this.documents.delete(document.id);
     return document.id;
-  }
-
-  find() {
-    // TODO: this
   }
 
   async insert({document, invocationSigner, capability}) {
