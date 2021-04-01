@@ -12,7 +12,7 @@
   EDV HTTP Storage Interface Example
 */
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
-import DockWallet from '../src/dock-wallet';
+import EDVWallet from '../src/edv-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 // import keyAgreementKeyJSON from '../tests/constants/keys/key-agreement-key.json';
 import keyBase58 from '../tests/constants/keys/key-base58.json';
@@ -27,7 +27,7 @@ import MockKak from '../tests/mock/kak';
     Would need a way to search documents in the EDV
 **/
 async function createWallet() {
-
+  const edvWallet = new EDVWallet('http://localhost:8080/edvs/documentid');
 }
 
 async function restoreWallet() {
