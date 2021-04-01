@@ -58,7 +58,7 @@ async function main() {
     });
   } catch (e) {
     // Try to get existing primary reference for our controller
-    const existingConfig = await storageInterface.findConfigFor(controller); // TODO: pass auth to this method
+    const existingConfig = await storageInterface.findConfigFor(controller);
     edvId = existingConfig && existingConfig.id;
     if (!edvId) {
       console.error('Unable to create or find primary EDV:');
