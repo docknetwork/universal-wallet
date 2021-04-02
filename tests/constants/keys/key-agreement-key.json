@@ -1,9 +1,7 @@
 {
   "type": "X25519KeyAgreementKey2019",
   "id": "urn:keyagreementtest",
-
-  // i think this controller is wrong for x25519key 
-  "controller": "did:key:did:key:z6MkjjCpsoQrwnEmqHzLdxWowXk5gjbwor4urC1RPDmGeV8r",
+  "controller": "did:key:TODOPROPERFINGERPRINT",
   "publicKeyBase58": "6GwnHZARcEkJio9dxPYy6SC5sAL6PxpZAB6VYwoFjGMU",
   "privateKeyBase58": "3CQCBKF3Mf1tU5q1FLpHpbxYrNYxLiZk4adDtfyPEfc39Wk6gsTb2qoc1ZtpqzJYdM1rG4gpaD3ZVKdkiDrkLF1p"
 }
