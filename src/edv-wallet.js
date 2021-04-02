@@ -1,9 +1,14 @@
-import DockWallet from './dock-wallet';
+import StorageWallet from './storage-wallet';
+import EDVHTTPStorageInterface from './storage/edv-http-storage';
 
-class EDVWallet extends DockWallet {
-  constructor(id) {
-    super(id);
-    // Pass id on constructor which is the ID of an EDV
+class EDVWallet extends StorageWallet {
+  constructor(id, storageOptions = {}) {
+    const storageInterface = new EDVHTTPStorageInterface({
+      url: id,
+      ...storageOptions,
+    });
+
+    super(id, storageInterface);
   }
 }
 

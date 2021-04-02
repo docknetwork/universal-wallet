@@ -38,7 +38,6 @@ async function main() {
   invocationSigner.sign = invocationSigner.signer().sign;
 
   // Create a storage interface pointing to a local server
-  // TODO: shall we pass invocationSigner, controller, capability etc here only?
   const storageInterface = new EDVHTTPStorageInterface({
     url: 'http://localhost:8080',
     keys,

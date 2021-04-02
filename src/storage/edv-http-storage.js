@@ -3,9 +3,17 @@ import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */
 class EDVHTTPStorageInterface extends StorageInterface {
-  constructor({ url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver, edvId }) {
+  constructor({ url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver }) {
     super();
-    this.serverUrl = url;
+
+    let edvId;
+    if (url.indexOf('/edvs/') !== -1) {
+      this.serverUrl = url.split('/edvs/')[0];
+      edvId = url;
+    } else {
+      this.serverUrl = url;
+    }
+
     this.keys = keys;
     this.httpsAgent = httpsAgent;
     this.defaultHeaders = defaultHeaders;
