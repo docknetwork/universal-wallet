@@ -17,19 +17,6 @@ import {
   WALLET_DEFAULT_ID,
 } from './constants';
 
-const WALLET_CONTENT_TYPES = [
-  // Supported document types
-  'VerifiableCredential',
-  'DIDResolutionResponse',
-  'Currency',
-  'Connection',
-  'MetaData',
-
-  // Supported key types
-  'Ed25519VerificationKey2018',
-  // TODO: add more
-];
-
 function ensureValidContent(content) {
   if (!content['@context']) {
     throw new Error('Content object requires valid JSON-LD with @context property');
@@ -42,13 +29,6 @@ function ensureValidContent(content) {
   if (!content.type) {
     throw new Error('Content object requires an type property');
   }
-
-  // TODO: determine if we want to support any type of document
-  // my thinking for POC is no
-  const contentTypes = Array.isArray(content.type) ? content.type : [content.type];
-  const isValidType = contentTypes.some((type) => {
-    return WALLET_CONTENT_TYPES.indexOf(type) > -1;
-  });
 
   if (!isValidType) {
     throw new Error(`Invalid content types: ${contentTypes}`);
@@ -167,6 +147,7 @@ class DockWallet {
       throw new Error('Cannot import over existing wallet content.');
     }
 
+    this.id = encryptedWalletCredential.id || WALLET_DEFAULT_ID;
     const keyPair = await passwordToKeypair(password);
     this.contents = await contentsFromEncryptedWalletCredential(
       encryptedWalletCredential,
