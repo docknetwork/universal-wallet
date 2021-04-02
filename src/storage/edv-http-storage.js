@@ -186,12 +186,13 @@ class EDVHTTPStorageInterface extends StorageInterface {
       hmac: {id: hmac.id, type: hmac.type}
     };
 
-    // sends a POST request to the remote service to create an EDV
     try {
       const { id } = await EdvClient.createEdv({
         url: `${this.serverUrl}/edvs`,
-        invocationSigner: invocationSigner || this.invocationSigner, // invocationSigner must be passed if controller is DID
-        capability: capability || this.capability, // capability must be passed if controller is DID
+        // TODO: BUG: with data-vault-example server it will fail when passing invoc and capability, bug on their on i think
+        // lines commented out for that reason, needs addressing somehow
+        // invocationSigner: invocationSigner || this.invocationSigner, // invocationSigner must be passed if controller is DID
+        // capability: capability || this.capability, // capability must be passed if controller is DID
         httpsAgent,
         headers,
         config,

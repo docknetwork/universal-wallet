@@ -16,7 +16,6 @@ import EDVWallet from '../src/edv-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 // import keyAgreementKeyJSON from '../tests/constants/keys/key-agreement-key.json';
 import keyBase58 from '../tests/constants/keys/key-base58.json';
-import keyJWK from '../tests/constants/keys/key-jwk.json';
 import MockHmac from '../tests/mock/hmac';
 import MockKak from '../tests/mock/kak';
 
@@ -50,7 +49,7 @@ async function main() {
 
   // TODO: some way to create a new wallet on the vault. this assumes an EDV exists with id below
   // i feel like edv creation should be out of band of wallet class
-  const walletId = 'http://localhost:8080/edvs/z19triBXWGLzhY7M9sPViDz97';
+  const walletId = 'http://localhost:8080/edvs/z1A8cpoziZJcdnsVeoTPTfrXP';
   console.log('Loading remote EDV wallet:', walletId);
 
   // Create a wallet instance for this EDV/wallet ID
@@ -82,11 +81,6 @@ async function main() {
     } catch (e) {
       console.log('Duplication check succeeded, cant insert two of the same documents.');
     }
-
-    // Add a key document
-    console.log('Adding a key to the wallet:', keyJWK.id);
-    edvWallet.add(keyJWK);
-    await edvWallet.sync();
 
     console.log('Wallet contents have been saved to the remote EDV, total:', edvWallet.contents.length);
     console.log('Run the example again to see contents loaded from the EDV');
