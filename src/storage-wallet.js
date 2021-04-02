@@ -30,6 +30,11 @@ class StorageWallet extends DockWallet {
     // TODO: edv remove call, need to find the edv document id by contentid
   }
 
+  async query(search) {
+    const { documents } = await this.storageInterface.find(search);
+    return documents.map(document => document.content);
+  }
+
   async sync() {
     // call this method to ensure storage interface requests finish
     // we do this because wallet doesnt require blocking operations

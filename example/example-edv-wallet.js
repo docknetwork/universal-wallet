@@ -47,21 +47,22 @@ async function main() {
   const invocationSigner = getKeypairFromDoc(keyBase58); // hacky mock signer
   invocationSigner.sign = invocationSigner.signer().sign;
 
+  // TODO: some way to create a new wallet on the vault. this assumes an EDV exists with id below
+  // i feel like edv creation should be out of band of wallet class
   const walletId = 'http://localhost:8080/edvs/z19triBXWGLzhY7M9sPViDz97';
   console.log('Loading remote EDV wallet:', walletId);
 
-  // TODO: some way to create a new wallet on the vault. this assumes an EDV exists with id below
-  // wallet contents are loaded automatically, perhaps we should provide options on how to query or load them
-  // i feel like edv creation should be out of band of wallet class
+  // Create a wallet instance for this EDV/wallet ID
   const edvWallet = new EDVWallet(walletId, {
     keys,
     invocationSigner,
     capability,
-    // referenceId: 'primary',
   });
+
+  // Load the wallet contents
   await edvWallet.load();
 
-  // Add basic wallet contents
+  // Add basic wallet contents if none exist
   if (edvWallet.contents.length === 0) {
     console.log('Wallet has no documents, adding some...');
 
@@ -95,7 +96,18 @@ async function main() {
     console.log('Wallet contents have been loaded from the remote EDV, total:', edvWallet.contents.length);
     console.log('Wallet result:', edvWallet.toJSON());
 
-    // TODO: remove all contents
+    // Query wallet for specific item
+    const itemResult = await edvWallet.query({
+      equals: {
+        'content.id': WALLET_CONTENT_ITEM.id,
+      },
+    });
+
+    if (itemResult.length > 0) {
+      console.log('Wallet content query successful, found', itemResult[0].id);
+    }
+
+    // Remove wallet contents
     console.log('Removing wallet contents from EDV...');
     edvWallet.contents.forEach(content => {
       edvWallet.remove(content.id);
