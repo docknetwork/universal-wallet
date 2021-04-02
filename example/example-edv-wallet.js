@@ -16,6 +16,7 @@ import EDVWallet from '../src/edv-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 // import keyAgreementKeyJSON from '../tests/constants/keys/key-agreement-key.json';
 import keyBase58 from '../tests/constants/keys/key-base58.json';
+import keyJWK from '../tests/constants/keys/key-jwk.json';
 import MockHmac from '../tests/mock/hmac';
 import MockKak from '../tests/mock/kak';
 
@@ -67,7 +68,7 @@ async function main() {
     console.log('Wallet has no documents, adding some...');
 
     // Add a credential
-    console.log('Adding credential...');
+    console.log('Adding credential to the wallet...', WALLET_CONTENT_ITEM.id);
     edvWallet.add(WALLET_CONTENT_ITEM);
 
     // Call optional sync method to ensure our storage promises
@@ -77,15 +78,14 @@ async function main() {
     // Try add the same item again, it should fail
     try {
       edvWallet.add(WALLET_CONTENT_ITEM);
+      await edvWallet.sync();
     } catch (e) {
-      console.log('Duplication check succeeded.')
+      console.log('Duplication check succeeded, cant insert two of the same documents.');
     }
 
     // Add a key document
-    edvWallet.add(keyBase58);
-
-    // Call optional sync method to ensure our storage promises
-    // have succeeded and completed
+    console.log('Adding a key to the wallet:', keyJWK.id);
+    edvWallet.add(keyJWK);
     await edvWallet.sync();
 
     console.log('Wallet contents have been saved to the remote EDV, total:', edvWallet.contents.length);
@@ -110,6 +110,7 @@ async function main() {
     // Remove wallet contents
     console.log('Removing wallet contents from EDV...');
     edvWallet.contents.forEach(content => {
+      console.log('\tRemoving:', content.id)
       edvWallet.remove(content.id);
     });
 

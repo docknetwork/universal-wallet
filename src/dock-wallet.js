@@ -189,9 +189,8 @@ class DockWallet {
    * @return {array<any>} List of contents results
    */
   query(search) {
-    const { type, query } = search;
-
-    // TODO: Implement and define params
+    // TODO: implement basic contents search for in memory wallet
+    // typically this method will be extended
   }
 
   async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options

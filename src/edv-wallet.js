@@ -3,7 +3,8 @@ import EDVHTTPStorageInterface from './storage/edv-http-storage';
 
 class EDVWallet extends StorageWallet {
   constructor(id, storageOptions = {}) {
-    const storageInterface = new EDVHTTPStorageInterface({
+    // Allow user to pass pre-initialized interface or construct a default one
+    const storageInterface = storageOptions.storageInterface || new EDVHTTPStorageInterface({
       url: id,
       ...storageOptions,
     });
