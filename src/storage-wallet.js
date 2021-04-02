@@ -9,20 +9,9 @@ class StorageWallet extends DockWallet {
     this.storageInterface = storageInterface;
   }
 
-  async load() {
-    const { documents } = await this.storageInterface.find();
-    documents.forEach(document => super.add(document.content));
-    return this.contents;
-  }
-
   add(content) {
-    super.add(content);
-    const promise = this.storageInterface.insert({
-      document: {
-        content,
-      },
-    });
-    this.promises.push(promise);
+    super.add(content)
+    this.promises.push(this.insertToStorage(content));
   }
 
   remove(contentId) {
@@ -30,13 +19,41 @@ class StorageWallet extends DockWallet {
     this.promises.push(this.removeFromStorage(contentId));
   }
 
+  async query(search) {
+    // Query storage interface and map into wallet contents
+    const { documents } = await this.storageInterface.find(search);
+    return documents.map(document => document.content);
+  }
+
+  async load() {
+    const { documents } = await this.storageInterface.find();
+    documents.forEach(document => super.add(document.content));
+    return this.contents;
+  }
+
+  async insertToStorage(content) {
+    try {
+      await this.storageInterface.insert({
+        document: {
+          content,
+        },
+      });
+    } catch (e) {
+      super.remove(content.id);
+      throw e;
+    }
+  }
+
   async removeFromStorage(contentId) {
+    // Find the storage document by the content ID
+    // some interfaces may just return the same document, but some need custom structures
     const { documents } = await this.storageInterface.find({
       equals: {
         'content.id': contentId,
       },
     });
 
+    // Delete first result from storage
     if (documents.length) {
       await this.storageInterface.delete({
         document: documents[0],
@@ -46,18 +63,15 @@ class StorageWallet extends DockWallet {
     }
   }
 
-  async query(search) {
-    const { documents } = await this.storageInterface.find(search);
-    return documents.map(document => document.content);
-  }
-
   async sync() {
-    // call this method to ensure storage interface requests finish
-    // we do this because wallet doesnt require blocking operations
-    // unless user requires them for specific purpose
+    // A user will call this method to ensure storage interface requests finish
+    // we do this because wallet doesnt always require blocking operations
+    // depending on the storage interface used
     const promises = this.promises;
     this.promises = [];
-    await Promise.all(promises);
+    if (promises.length) {
+      await Promise.all(promises);
+    }
   }
 }
 

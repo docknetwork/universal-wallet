@@ -82,6 +82,9 @@ class DockWallet {
   add(content) {
     ensureWalletUnlocked(this);
     ensureValidContent(content);
+    if (this.has(content.id)) {
+      throw new Error(`Duplication error: ID: ${content.id} already exists`);
+    }
     this.contents.push(content);
     return this;
   }
