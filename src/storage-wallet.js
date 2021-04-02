@@ -6,25 +6,28 @@ class StorageWallet extends DockWallet {
 
     this.promises = [];
     this.storageInterface = storageInterface;
+  }
 
-    // TODO: load wallet contents
-
+  async load() {
+    const { documents } = await this.storageInterface.find();
+    documents.forEach(document => super.add(document.content));
+    return this.contents;
   }
 
   add(content) {
     super.add(content);
-
-    console.log('add content', content)
-
-    // TODO: indexing, perhaps indexing is an EDV thing only for now
-
     const promise = this.storageInterface.insert({
       document: {
-        // TODO: overwrite id?
-        ...content,
+        content,
       },
     });
     this.promises.push(promise);
+  }
+
+  remove(contentId) {
+    super.remove(contentId);
+
+    // TODO: edv remove call, need to find the edv document id by contentid
   }
 
   async sync() {

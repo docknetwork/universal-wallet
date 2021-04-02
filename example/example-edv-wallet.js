@@ -52,21 +52,36 @@ async function main() {
 
   // TODO: some way to create a new wallet on the vault. this assumes an EDV exists with id below
   // wallet contents are loaded automatically, perhaps we should provide options on how to query or load them
+  // i feel like edv creation should be out of band of wallet class
   const edvWallet = new EDVWallet(walletId, {
     keys,
     invocationSigner,
     capability,
     // referenceId: 'primary',
   });
+  await edvWallet.load();
 
   // Add basic wallet contents
   if (edvWallet.contents.length === 0) {
     console.log('Wallet has no documents, adding some...');
 
     // Add a credential
+    console.log('Adding credential...');
     edvWallet.add(WALLET_CONTENT_ITEM);
 
-    // TODO: add keys
+    // Call optional sync method to ensure our storage promises
+    // have succeeded and completed
+    await edvWallet.sync();
+
+    // Try add the same item again, it should fail
+    try {
+      edvWallet.add(WALLET_CONTENT_ITEM);
+    } catch (e) {
+      console.log('Duplication check succeeded.')
+    }
+
+    // Add a key document
+    edvWallet.add(keyBase58);
 
     // Call optional sync method to ensure our storage promises
     // have succeeded and completed
@@ -74,11 +89,24 @@ async function main() {
 
     console.log('Wallet contents have been saved to the remote EDV, total:', edvWallet.contents.length);
     console.log('Run the example again to see contents loaded from the EDV');
+    console.log('Wallet result:', edvWallet.toJSON());
   } else {
+    // Contents were retrieved from EDV, lets display then remove them
     console.log('Wallet contents have been loaded from the remote EDV, total:', edvWallet.contents.length);
-  }
+    console.log('Wallet result:', edvWallet.toJSON());
 
-  console.log('Wallet result:', edvWallet.toJSON())
+    // TODO: remove all contents
+    console.log('Removing wallet contents from EDV...');
+    edvWallet.contents.forEach(content => {
+      edvWallet.remove(content.id);
+    });
+
+    // Call optional sync method to ensure our storage promises
+    // have succeeded and completed
+    await edvWallet.sync();
+
+    console.log('Wallet contents have been removed from the EDV, run the example again to re-create it');
+  }
 }
 
 main()

@@ -8,6 +8,12 @@ class EDVWallet extends StorageWallet {
       ...storageOptions,
     });
 
+    // Ensure documents have ID property, are indexed by it, and are unique
+    storageInterface.client.ensureIndex({
+      attribute: 'content.id',
+      unique: true,
+    });
+
     super(id, storageInterface);
   }
 }

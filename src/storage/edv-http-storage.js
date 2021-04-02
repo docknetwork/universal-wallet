@@ -44,10 +44,6 @@ class EDVHTTPStorageInterface extends StorageInterface {
     }
   }
 
-  find() {
-    // TODO: this
-  }
-
   async get({ id, invocationSigner, capability, recipients }) {
     if (!this.documents.get(id)) {
       const newDocument = new EdvDocument({
@@ -101,12 +97,29 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return insertResult;
   }
 
-  ensureIndex(params) {
-    this.client.ensureIndex(params);
+  async count({ equals, has, invocationSigner, capability } = {}) {
+    const {count} = await this.find({
+      equals,
+      has,
+      count: true,
+      invocationSigner,
+      capability,
+    });
+    return count;
   }
 
-  async updateIndex(params) {
-    this.client.updateIndex(params);
+  async find({ equals, has, count = false, invocationSigner, capability } = {}) {
+    const { keyAgreementKey, hmac } = this.keys;
+    const result = await this.client.find({
+      equals: (equals || has) ? equals : undefined,
+      has: (equals || has) ? has : 'content.id',
+      count,
+      keyAgreementKey,
+      hmac,
+      invocationSigner: invocationSigner || this.invocationSigner,
+      capability: capability || this.capability,
+    });
+    return result;
   }
 
   connectTo(id) {
