@@ -19,6 +19,11 @@ class StorageWallet extends DockWallet {
     this.promises.push(this.removeFromStorage(contentId));
   }
 
+  update(content) {
+    super.update(content);
+    // TODO
+  }
+
   async query(search) {
     // Query storage interface and map into wallet contents
     const { documents } = await this.storageInterface.find(search);
@@ -26,12 +31,17 @@ class StorageWallet extends DockWallet {
   }
 
   async load() {
+    // Find all documents, storage interfaces should return all docs when no params supplied
     const { documents } = await this.storageInterface.find();
+
+    // Format to wallet contents
     documents.forEach(document => super.add(document.content));
     return this.contents;
   }
 
   async insertToStorage(content) {
+    // Attempt to insert the document to the storage interface
+    // if the promise fails, then the content will be removed and error re-thrown
     try {
       await this.storageInterface.insert({
         document: {

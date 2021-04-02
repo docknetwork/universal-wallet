@@ -101,6 +101,10 @@ class DockWallet {
     return this;
   }
 
+  update(content) {
+    // TODO
+  }
+
   /**
    * Checks if a wallet has content with specific ID
    * The wallet must be unlocked to make this call
