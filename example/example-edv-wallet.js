@@ -1,7 +1,6 @@
 /*
   EDVWallet interop example
 */
-import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 import EDVWallet from '../src/edv-wallet';
 
@@ -28,12 +27,12 @@ async function main() {
   console.log('Using keys:', keys)
 
   const { controller } = keyBase58;
-  const capability = undefined; // use defaults
   const invocationSigner = getKeypairFromDoc(keyBase58); // hacky mock signer
   invocationSigner.sign = invocationSigner.signer().sign;
 
   // TODO: some way to create a new wallet on the vault. this assumes an EDV exists with id below
-  // i feel like edv creation should be out of band of wallet class
+  // i feel like edv creation should be out of band of wallet class, perhaps a static method would suffice
+  // EG: if (noedv) walletId = EDVWallet.createEDV();
   const walletId = 'http://localhost:8080/edvs/z1A8cpoziZJcdnsVeoTPTfrXP';
   console.log('Loading remote EDV wallet:', walletId);
 
@@ -41,7 +40,6 @@ async function main() {
   const edvWallet = new EDVWallet(walletId, {
     keys,
     invocationSigner,
-    capability,
   });
 
   await useStorageWallet(edvWallet);

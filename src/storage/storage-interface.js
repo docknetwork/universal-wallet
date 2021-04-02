@@ -1,3 +1,4 @@
+/** This class contains the base methods that must be overridden in any storage interface */
 class StorageInterface {
   constructor() {
     // noop for now
