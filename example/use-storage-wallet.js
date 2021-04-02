@@ -2,6 +2,16 @@ import {
   WALLET_SIGNED_CREDENTIAL,
 } from '../tests/constants';
 
+async function updateWalletContents(wallet) {
+  // TODO: update method
+  const updateIndex = 0;
+  console.log(`Updating wallet content at index ${updateIndex}...`);
+  console.log('TODO');
+
+  await wallet.sync();
+  console.log('Contents updated');
+}
+
 export default async function useStorageWallet(wallet) {
   // Load the wallet contents
   await wallet.load();
@@ -26,6 +36,9 @@ export default async function useStorageWallet(wallet) {
       console.log('Duplication check succeeded, cant insert two of the same documents.');
     }
 
+    // Update the wallet contents
+    await updateWalletContents(wallet);
+
     console.log('Wallet contents have been saved to the storage, total:', wallet.contents.length);
     console.log('Run the example again to see contents loaded from the storage');
     console.log('Wallet result:', wallet.toJSON());
@@ -33,6 +46,9 @@ export default async function useStorageWallet(wallet) {
     // Contents were retrieved from storage, lets display then remove them
     console.log('Wallet contents have been loaded from the storage, total:', wallet.contents.length);
     console.log('Wallet result:', wallet.toJSON());
+
+    // Update the wallet contents
+    await updateWalletContents(wallet);
 
     // Query wallet for specific item
     const itemResult = await wallet.query({

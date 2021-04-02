@@ -27,7 +27,7 @@ class FSStorageInterface extends StorageInterface {
   }
 
   async update(options) {
-    this.insert(options);
+    return this.insert(options);
   }
 
   async delete({ document }) {
