@@ -192,8 +192,23 @@ class DockWallet {
    * @return {array<any>} List of contents results
    */
   query(search) {
-    // TODO: implement basic contents search for in memory wallet
-    // typically this method will be extended
+    // Really basic "search" of contents
+    // typically a wallet class would extend this method
+    const { equals = {} } = search;
+    return this.contents.filter(content => {
+      for (let term in equals) {
+        const termSplit = term.split('.');
+        const termProperty = termSplit[1];
+        if (termSplit[0] === 'content') {
+          if (content[termProperty] === equals[term]) {
+            return true;
+          }
+        } else {
+          throw new Error(`Equals terms must be for content`);
+        }
+      }
+      return false;
+    });
   }
 
   async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options

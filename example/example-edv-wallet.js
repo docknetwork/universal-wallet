@@ -20,15 +20,12 @@ import MockHmac from '../tests/mock/hmac';
 import MockKak from '../tests/mock/kak';
 
 import {
-  WALLET_CONTENT_ITEM,
+  WALLET_SIGNED_CREDENTIAL,
 } from '../tests/constants';
 
 /**
   Currently this example requires that you run a secure data vault server locally
-  Idea of a flow:
-    One document in EDV = One document in the wallet
-    Document capabilities can be different depending
-    Would need a way to search documents in the EDV
+  and have a pre-created EDV for now (need to expand this later)
 **/
 async function main() {
   // Get mock keys
@@ -40,7 +37,7 @@ async function main() {
     keyAgreementKey,
     hmac,
   };
-  // console.log('Using keys:', keys)
+  console.log('Using keys:', keys)
 
   const { controller } = keyBase58;
   const capability = undefined; // use defaults
@@ -67,8 +64,8 @@ async function main() {
     console.log('Wallet has no documents, adding some...');
 
     // Add a credential
-    console.log('Adding credential to the wallet...', WALLET_CONTENT_ITEM.id);
-    edvWallet.add(WALLET_CONTENT_ITEM);
+    console.log('Adding credential to the wallet...', WALLET_SIGNED_CREDENTIAL.id);
+    edvWallet.add(WALLET_SIGNED_CREDENTIAL);
 
     // Call optional sync method to ensure our storage promises
     // have succeeded and completed
@@ -76,7 +73,7 @@ async function main() {
 
     // Try add the same item again, it should fail
     try {
-      edvWallet.add(WALLET_CONTENT_ITEM);
+      edvWallet.add(WALLET_SIGNED_CREDENTIAL);
       await edvWallet.sync();
     } catch (e) {
       console.log('Duplication check succeeded, cant insert two of the same documents.');
@@ -93,7 +90,7 @@ async function main() {
     // Query wallet for specific item
     const itemResult = await edvWallet.query({
       equals: {
-        'content.id': WALLET_CONTENT_ITEM.id,
+        'content.id': WALLET_SIGNED_CREDENTIAL.id,
       },
     });
 

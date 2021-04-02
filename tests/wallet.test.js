@@ -3,7 +3,8 @@ import DockWallet from '../src/index';
 import {
   WALLET_LOCKED,
   WALLET_UNLOCKED,
-  WALLET_CONTENT_ITEM,
+  WALLET_SIGNED_CREDENTIAL,
+  WALLET_UNSIGNED_CREDENTIAL,
   WalletPassword,
 } from './constants';
 
@@ -37,8 +38,8 @@ describe('Wallet - Basic functionality', () => {
   const wallet = new DockWallet(WALLET_DEFAULT_ID);
 
   test('Can add a credential', () => {
-    wallet.add(WALLET_CONTENT_ITEM);
-    expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(true);
+    wallet.add(WALLET_SIGNED_CREDENTIAL);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
   });
 
   test('Can lock a wallet', async () => {
@@ -48,14 +49,14 @@ describe('Wallet - Basic functionality', () => {
   });
 
   test('Can not add or remove when a wallet is locked', () => {
-    expect(() => wallet.add(WALLET_CONTENT_ITEM)).toThrow(/Wallet is locked/);
-    expect(() => wallet.remove(WALLET_CONTENT_ITEM)).toThrow(/Wallet is locked/);
+    expect(() => wallet.add(WALLET_SIGNED_CREDENTIAL)).toThrow(/Wallet is locked/);
+    expect(() => wallet.remove(WALLET_SIGNED_CREDENTIAL)).toThrow(/Wallet is locked/);
   });
 
   test('Can unlock a wallet', async () => {
     await wallet.unlock(WalletPassword);
     expect(wallet.status).toBe(DockWallet.Unlocked);
-    expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(true);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
   });
 
   test('Unlocked JSON representation', () => {
@@ -64,8 +65,23 @@ describe('Wallet - Basic functionality', () => {
   });
 
   test('Can remove a credential', () => {
-    wallet.remove(WALLET_CONTENT_ITEM.id);
-    expect(wallet.has(WALLET_CONTENT_ITEM.id)).toBe(false);
+    wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
+  // });
+
+  test('Can query for contents', async () => {
+    // Add two items to search between
+    wallet.add(WALLET_SIGNED_CREDENTIAL);
+    wallet.add(WALLET_UNSIGNED_CREDENTIAL);
+
+    // Query for item 2's ID
+    const queryResult = await wallet.query({
+      equals: {
+        'content.id': WALLET_UNSIGNED_CREDENTIAL.id,
+      },
+    });
+
+    expect(queryResult[0].id).toEqual(WALLET_UNSIGNED_CREDENTIAL.id);
   });
 });
 
