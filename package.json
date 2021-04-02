@@ -37,6 +37,7 @@
     "lint": "eslint \"{src,tests,example}/**/*.js\"",
     "build": "rollup -c",
     "watch": "rollup -c -w",
+    "example-fs-wallet": "npx babel-node example/example-fs-wallet",
     "example-edv-wallet": "npx babel-node example/example-edv-wallet",
     "example-edv-http": "npx babel-node example/example-edv-http-storage",
     "test": "jest --verbose ./tests",

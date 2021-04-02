@@ -3,24 +3,28 @@ class StorageInterface {
     // noop for now
   }
 
-  find() {
-    // TODO: this
+  async get() {
+    throw new Error(`StorageInterface get method must be declared in inherited class`);
   }
 
-  get() {
-
+  async update() {
+    throw new Error(`StorageInterface update method must be declared in inherited class`);
   }
 
-  insert() {
-
+  async delete() {
+    throw new Error(`StorageInterface delete method must be declared in inherited class`);
   }
 
-  update() {
-
+  async insert() {
+    throw new Error(`StorageInterface insert method must be declared in inherited class`);
   }
 
-  remove() {
+  async count() {
+    throw new Error(`StorageInterface count method must be declared in inherited class`);
+  }
 
+  async find() {
+    throw new Error(`StorageInterface find method must be declared in inherited class`);
   }
 }
 
