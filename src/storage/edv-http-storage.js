@@ -110,16 +110,20 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
   async find({ equals, has, count = false, invocationSigner, capability } = {}) {
     const { keyAgreementKey, hmac } = this.keys;
-    const result = await this.client.find({
-      equals: (equals || has) ? equals : undefined,
-      has: (equals || has) ? has : 'content.id',
-      count,
-      keyAgreementKey,
-      hmac,
-      invocationSigner: invocationSigner || this.invocationSigner,
-      capability: capability || this.capability,
-    });
-    return result;
+    try {
+      const result = await this.client.find({
+        equals: (equals || has) ? equals : undefined,
+        has: (equals || has) ? has : 'content.id',
+        count,
+        keyAgreementKey,
+        hmac,
+        invocationSigner: invocationSigner || this.invocationSigner,
+        capability: capability || this.capability,
+      });
+      return result;
+    } catch (e) {
+      return { documents: [] };
+    }
   }
 
   connectTo(id) {

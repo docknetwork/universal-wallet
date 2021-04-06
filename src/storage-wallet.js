@@ -35,7 +35,9 @@ class StorageWallet extends DockWallet {
     const { documents } = await this.storageInterface.find();
 
     // Format to wallet contents
-    documents.forEach(document => super.add(document.content));
+    if (documents) {
+      documents.forEach(document => super.add(document.content));
+    }
     return this.contents;
   }
 

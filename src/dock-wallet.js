@@ -29,10 +29,6 @@ function ensureValidContent(content) {
   if (!content.type) {
     throw new Error('Content object requires an type property');
   }
-
-  if (!isValidType) {
-    throw new Error(`Invalid content types: ${contentTypes}`);
-  }
 }
 
 function ensureWalletUnlocked(wallet) {
