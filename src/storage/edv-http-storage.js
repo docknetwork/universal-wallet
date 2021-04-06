@@ -121,7 +121,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
         capability: capability || this.capability,
       });
       return result;
-    } catch (e) {
+    } catch (e) { // Find can result in HTTP not found error if query is empty for new EDV
       return { documents: [] };
     }
   }

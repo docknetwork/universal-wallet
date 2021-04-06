@@ -13,7 +13,6 @@ import useStorageWallet from './use-storage-wallet';
 
 /**
   Currently this example requires that you run a secure data vault server locally
-  and have a pre-created EDV for now (need to expand this later)
 **/
 async function main() {
   // Get mock keys
