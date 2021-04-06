@@ -5,6 +5,9 @@ import StorageInterface from './storage-interface';
 class EDVHTTPStorageInterface extends StorageInterface {
   constructor({ url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver }) {
     super();
+    if (!url) {
+      throw new Error(`EDVHTTPStorageInterface requires url parameter`);
+    }
 
     let edvId;
     if (url.indexOf('/edvs/') !== -1) {

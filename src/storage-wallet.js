@@ -21,7 +21,7 @@ class StorageWallet extends DockWallet {
 
   update(content) {
     super.update(content);
-    // TODO
+    this.promises.push(this.updateInStorage(content));
   }
 
   async query(search) {
@@ -41,6 +41,16 @@ class StorageWallet extends DockWallet {
     return this.contents;
   }
 
+  async updateInStorage(content) {
+    const documentResult = await this.getStorageDocument(content);
+    await this.storageInterface.update({
+      document: {
+        ...documentResult,
+        content,
+      },
+    });
+  }
+
   async insertToStorage(content) {
     // Attempt to insert the document to the storage interface
     // if the promise fails, then the content will be removed and error re-thrown
@@ -56,22 +66,26 @@ class StorageWallet extends DockWallet {
     }
   }
 
-  async removeFromStorage(contentId) {
+  async removeFromStorage(id) {
+    await this.storageInterface.delete({
+      document: await this.getStorageDocument({ id }),
+    });
+  }
+
+  async getStorageDocument({ id }) {
     // Find the storage document by the content ID
     // some interfaces may just return the same document, but some need custom structures
     const { documents } = await this.storageInterface.find({
       equals: {
-        'content.id': contentId,
+        'content.id': id,
       },
     });
 
     // Delete first result from storage
     if (documents.length) {
-      await this.storageInterface.delete({
-        document: documents[0],
-      });
+      return documents[0];
     } else {
-      throw new Error(`Unable to find storage document to remove content: ${contentId}`);
+      throw new Error(`Unable to find storage document by content.id: ${id}`);
     }
   }
 

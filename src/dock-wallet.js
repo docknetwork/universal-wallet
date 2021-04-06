@@ -78,7 +78,14 @@ class DockWallet {
   }
 
   update(content) {
-    // TODO
+    ensureWalletUnlocked(this);
+    const contentItems = this.contents.filter(c => c.id === content.id);
+    if (contentItems.length) {
+      const contentIndex = this.contents.indexOf(contentItems[0]);
+      this.contents[contentIndex] = content;
+    } else {
+      throw new Error(`Cannot find content with ID ${content.id} to update`);
+    }
   }
 
   /**
