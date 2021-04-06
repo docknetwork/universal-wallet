@@ -10,10 +10,11 @@
   "status": "UNLOCKED",
   "contents": [
     {
+      "@context": ["https://w3id.org/wallet/v1"],
       "id": "did:key:z6MkjjCpsoQrwnEmqHzLdxWowXk5gjbwor4urC1RPDmGeV8r#z6MkjjCpsoQrwnEmqHzLdxWowXk5gjbwor4urC1RPDmGeV8r",
-      "title": "My Test Key 2",
+      "name": "My Test Key 2",
       "image": "https://via.placeholder.com/150",
-      "description": "For testing only, totally compromised.",
+      "description" : "For testing only, totally compromised.",
       "tags": ["professional", "organization", "compromised"],
       "correlation": ["4058a72a-9523-11ea-bb37-0242ac130002"],
       "controller": "did:key:z6MkjjCpsoQrwnEmqHzLdxWowXk5gjbwor4urC1RPDmGeV8r",

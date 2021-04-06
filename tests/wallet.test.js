@@ -5,7 +5,7 @@ import {
   WALLET_UNLOCKED,
   WALLET_SIGNED_CREDENTIAL,
   WALLET_UNSIGNED_CREDENTIAL,
-  WalletPassword,
+  WALLET_PASSWORD,
 } from './constants';
 
 import {
@@ -43,7 +43,7 @@ describe('Wallet - Basic functionality', () => {
   });
 
   test('Can lock a wallet', async () => {
-    await wallet.lock(WalletPassword);
+    await wallet.lock(WALLET_PASSWORD);
     expect(wallet.status).toBe(DockWallet.Locked);
     expect(wallet.contents[0].ciphertext).toBeDefined();
   });
@@ -54,7 +54,7 @@ describe('Wallet - Basic functionality', () => {
   });
 
   test('Can unlock a wallet', async () => {
-    await wallet.unlock(WalletPassword);
+    await wallet.unlock(WALLET_PASSWORD);
     expect(wallet.status).toBe(DockWallet.Unlocked);
     expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
   });
@@ -67,7 +67,7 @@ describe('Wallet - Basic functionality', () => {
   test('Can remove a credential', () => {
     wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
     expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
-  // });
+  });
 
   test('Can query for contents', async () => {
     // Add two items to search between
@@ -90,16 +90,16 @@ describe('Wallet - Import/Export', () => {
 
   test('Can import, export and re-import a wallet', async () => {
     // Import wallet from file
-    await wallet.import(WALLET_LOCKED, WalletPassword);
+    await wallet.import(WALLET_LOCKED, WALLET_PASSWORD);
     expect(wallet.has(WALLET_UNLOCKED.contents[0].id)).toBe(true);
 
     // Get exported credential
-    const exportedWallet = await wallet.export(WalletPassword);
+    const exportedWallet = await wallet.export(WALLET_PASSWORD);
     expect(exportedWallet).toMatchObject(lockedWalletObject);
 
     // Try to reimport it
     const importedWallet = new DockWallet();
-    await importedWallet.import(exportedWallet, WalletPassword);
+    await importedWallet.import(exportedWallet, WALLET_PASSWORD);
     expect(importedWallet.has(WALLET_UNLOCKED.contents[0].id)).toBe(true);
   });
 });

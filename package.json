@@ -1,11 +1,11 @@
 {
-  "name": "@docknetwork/es6-library-template",
+  "name": "@docknetwork/wallet",
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/docknetwork/es6-library-template"
+    "url": "https://github.com/docknetwork/wallet"
   },
   "engines": {
     "node": ">=13.0.0"
@@ -41,13 +41,23 @@
     "example-edv-wallet": "npx babel-node example/example-edv-wallet",
     "example-edv-http": "npx babel-node example/example-edv-http-storage",
     "test": "jest --verbose ./tests",
+    "test-wallet": "jest --verbose ./tests/wallet",
+    "test-edvwallet": "jest --verbose ./tests/edv-wallet",
     "test-keys": "jest --verbose ./tests/keys",
     "test-creds": "jest --verbose ./tests/credentials",
     "docs": "mkdir out && touch out/.nojekyll && jsdoc src -r -c .jsdoc -d out/reference",
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
   "jest": {
-    "testEnvironment": "node"
+    "transform": {
+      "^.+\\.(ts|js)$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@polkadot|@babel)"
+    ],
+    "setupFilesAfterEnv": [
+      "./tests/setup-test-env.js"
+    ]
   },
   "resolutions": {
     "fetch-blob": "2.1.1"
@@ -58,6 +68,7 @@
     "@transmute/did-key-cipher": "0.2.1-unstable.31",
     "@transmute/did-key-ed25519": "0.2.1-unstable.31",
     "@transmute/did-key-x25519": "0.2.1-unstable.31",
+    "babel-polyfill": "^6.26.0",
     "did-method-key": "https://github.com/digitalbazaar/did-method-key-js#v1.x",
     "edv-client": "^8.0.0"
   }

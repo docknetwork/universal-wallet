@@ -1,38 +1,38 @@
 {
-  "@context":[
+  "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://w3id.org/wallet/v1"
   ],
-  "id":"did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW#encrypted-wallet",
-  "type":[
+  "id": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW#encrypted-wallet",
+  "type": [
     "VerifiableCredential",
     "EncryptedWallet"
   ],
-  "issuer":"did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
-  "issuanceDate":"2021-03-24T21:51:12.996Z",
-  "credentialSubject":{
-    "id":"did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
-    "encryptedWalletContents":{
-      "protected":"eyJlbmMiOiJYQzIwUCJ9",
-      "recipients":[
+  "issuer": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
+  "issuanceDate": "2021-04-06T17:28:43.191Z",
+  "credentialSubject": {
+    "id": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
+    "encryptedWalletContents": {
+      "protected": "eyJlbmMiOiJYQzIwUCJ9",
+      "recipients": [
         {
-          "header":{
-            "kid":"did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW#z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
-            "alg":"ECDH-ES+A256KW",
-            "epk":{
-              "kty":"OKP",
-              "crv":"X25519",
-              "x":"fW6SlGKqHfH73WEUsittXBntNh1_n6neWFf1p8VuwgM"
+          "header": {
+            "kid": "did:key:z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW#z6LSh9QZ7XvksR7dv5Pnh6sFuiTcq1F2XmXS5Bsb161tgRBW",
+            "alg": "ECDH-ES+A256KW",
+            "epk": {
+              "kty": "OKP",
+              "crv": "X25519",
+              "x": "BaUdLACKDjjPA0yc_lgBfAXhLuQiz6UShkz9I7aRkXg"
             },
-            "apu":"fW6SlGKqHfH73WEUsittXBntNh1_n6neWFf1p8VuwgM",
-            "apv":"ZGlkOmtleTp6NkxTaDlRWjdYdmtzUjdkdjVQbmg2c0Z1aVRjcTFGMlhtWFM1QnNiMTYxdGdSQlcjejZMU2g5UVo3WHZrc1I3ZHY1UG5oNnNGdWlUY3ExRjJYbVhTNUJzYjE2MXRnUkJX"
+            "apu": "BaUdLACKDjjPA0yc_lgBfAXhLuQiz6UShkz9I7aRkXg",
+            "apv": "ZGlkOmtleTp6NkxTaDlRWjdYdmtzUjdkdjVQbmg2c0Z1aVRjcTFGMlhtWFM1QnNiMTYxdGdSQlcjejZMU2g5UVo3WHZrc1I3ZHY1UG5oNnNGdWlUY3ExRjJYbVhTNUJzYjE2MXRnUkJX"
           },
-          "encrypted_key":"43xknz6_5p9D20NGaxib6nRl90ANEvfKk4eIOD8cXT7Fj7_NIoR0dg"
+          "encrypted_key": "6abhx46aubaNv4TR6FUKWyRNeKrNWTvO7ymCpEW_OaVOhzDV543dUA"
         }
       ],
-      "iv":"fVNHeW5n6G0U3DbFhMamP9yYqBzNQfxf",
-      "ciphertext":"AF1bzdrodTzZXFHKL3MFUCSNgLYimSZHU1BsfPRgQ7UPgGzGkhphwtP0oNpwrDtythhdL-UK9lhBXuBacnCns1lK1juTdypONX8TjUoRdgIcPXVUuyN1G7cSEK9WuRvo-Zz6ZMMcg6AcBGsjumcqUTeQQYHeVAnUnuv82AmrCi918vvOt0NcQwk7XBkN5jdVK8_82XL-57BTL_UgUBhN3Mr4SfDOJ4QoM1ZMU4mxbqeLiKaLVCzOWVfOtClTZWCXW05wQrUrYY6DSlvWW2x1Z9rOtEYQJurQPgZ2_qBks5jqNtKbTh6ItY9Gi2LUUeTs5j7EjNZCEHysSpBrQKh-Ec5B5iri958gP5i_blbftcPc-jbp-VF8TaPU3LzLw9dY6LY2y-_8yeJ8o26lcorauQLXX6XmxCvX0NQNOFmbWIEK9vby1MX_QGTjwakKdEuJiaVl6jcrPuLQezhKw-Kstq67PQQzQaD_gVcep5dISIfU7IPwOs7ZiurIV1N8ZNu6uebVc_DJ6N6ATYMNJZA1lzkYAE6DBoi-O_sUg1A_Q26Vuiif1SvukqIqzitTBDeQw4dChUEbhYG1Wct2dO7RVjhpDtaym1zsHi4_A8dHwt5WY_0kAPlulrY82hma0PHYk_DjXDT-Sm_pm-dCBEvuwXbzdN-h1Tz5xjaAiQrSAuPM4gs8uBjAYwrB8ryr6naHhFKJTDEik-xIe34YMppy8_0FU7_jQjbgRkRUMMkKDTVRxiSgxj909seswyFjTipOmhI05KU",
-      "tag":"XGkt6hND21oCqUVYcNOk-g"
+      "iv": "oSpHRa46e-crJZ55fkd7dtuBif3SQftx",
+      "ciphertext": "N9Rs8_j2v3VNeRXYrj1NYpJ84rxOEJXMK0H8rDY8K_x83jKKA4rJc8jm1UlsofGuiDyBXpozCfHRZTjfLvS30HjdsxAXJdMyBXkRp7Tm6USypjzszryahH0Jy2mO6jCFR4tF1CF32_ccXKarRgoGmjOTf5yavbrPMcgCd4oUJtmZ8BWvG3BSD3GYfQ55us2Mw8jxjpPoNEWvlk6hUVMqKWItXudygsDlBhwt5j2fDbTW4hQMpLIM2_C3ZSfBAooZNl83gsHMJqRPCnHY1N-7E6GNAy0EN8geyHyZJm6QHKpmLY0JvZL29SrFqOPaL1jTfLf2s70z0u303hT8ZaBlPKwvSABVDnYy9ZjkkUlPYfOAoTglN_byQ-MnMHmue7zvfjnOD-foYtw97QfUDjfu-5gAvsio181j9LjVncjIQrY_nGdEpbalz9sbWiFRGKFCq5iQdM3LHiwNnTsQO48lFuz35KvrRdo4FcuPlv_9XQ-p-zDsE5sSjH4iEKP6h-FUZqqqm4VR_gxX2NyGHvtEsOhhlJ3jjAx8Y7GXI5ETfgLjDtZPbG4coZW8qHz10krejQYycgPh4goTAYF4GDDnMqoKkfHIIwWbLn_Lp3TbFAM1KdUgx8PnH5VYuQDoyWnLWX56B-diIITKeRhYU6LI_8wM4xN0CDnJidlpcYdSGP31ip9pehef9nQWXKvYXDmVvGMHoEQaj-O20LUj0wZLUuv5ZebnKy5gMJ7VY80XaTU3V2Vg2S_9boVtxhrwYrH7MrgPyU2dVUhDeiteN0QYiMcDkahg9psor7oPkCheIaB0nlW3vTMgZ4i6FMNBWx46ISaIuTdPQmOQM87YyrQCefqWb9crR9yCApeA8rkD4GaOqirPsJAfO4FqM6ih6veSc811Qv63XKo4xA",
+      "tag": "k-PdPJEMpGmfGq8bIZ0v3Q"
     }
   }
 }

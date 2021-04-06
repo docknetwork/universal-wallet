@@ -1,4 +1,5 @@
 {
+  "@context": ["https://w3id.org/wallet/v1"],
   "type": "X25519KeyAgreementKey2019",
   "id": "urn:keyagreementtest",
   "controller": "did:key:TODOPROPERFINGERPRINT",
