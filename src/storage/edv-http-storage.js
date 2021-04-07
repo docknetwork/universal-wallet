@@ -11,15 +11,6 @@ class EDVHTTPStorageInterface extends StorageInterface {
       throw new Error('EDVHTTPStorageInterface requires url parameter');
     }
 
-    let edvId;
-    if (url.indexOf('/edvs/') !== -1) {
-      const [serverUrl] = url.split('/edvs/');
-      this.serverUrl = serverUrl;
-      edvId = url;
-    } else {
-      this.serverUrl = url;
-    }
-
     this.keys = keys;
     this.httpsAgent = httpsAgent;
     this.defaultHeaders = defaultHeaders;
@@ -29,12 +20,20 @@ class EDVHTTPStorageInterface extends StorageInterface {
       throw new Error('EDVHTTPStorageInterface requires keys object with keyAgreementKey and hmac');
     }
 
-    // Returns keyAgreementKey, dont think we need any other
-    // TODO: double check this
+    // Detect if trying to auto connect to an EDV
+    let edvId;
+    if (url.indexOf('/edvs/') !== -1) {
+      const [serverUrl] = url.split('/edvs/');
+      this.serverUrl = serverUrl;
+      edvId = url;
+    } else {
+      this.serverUrl = url;
+    }
+
+    // Hardcoded key resolver using this instances keys
     this.keyResolver = keyResolver;
     if (!this.keyResolver) {
       this.keyResolver = ({ id }) => {
-        console.log('Debug key resolve:', id);
         if (id === this.keys.keyAgreementKey.id) {
           return this.keys.keyAgreementKey;
         } else if (id === this.keys.hmac.id) {
@@ -208,8 +207,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
       url: `${this.serverUrl}/edvs`,
       // TODO: BUG: with data-vault-example server it will fail when passing invoc and capability, bug on their on i think
       // lines commented out for that reason, needs addressing somehow
-      disabledinvocationSigner: invocationSigner || this.invocationSigner, // invocationSigner must be passed if controller is DID
-      disabledcapability: capability || this.capability, // capability must be passed if controller is DID
+      disabledinvocationSigner: invocationSigner || this.invocationSigner,
+      disabledcapability: capability || this.capability,
       httpsAgent,
       headers,
       config,
