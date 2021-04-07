@@ -6,7 +6,7 @@ import {
 } from './methods/contents';
 
 import { passwordToKeypair } from './methods/password';
-import { getKeypairFromDoc, getKeypairDocFromWallet, getKeypairFromController } from './methods/keypairs';
+import { getKeypairFromDoc, getKeypairDocFromWallet, getKeypairFromController, getKeydocFromPair } from './methods/keypairs';
 
 import VerifiableCredential from '@docknetwork/sdk/verifiable-credential';
 import { issueCredential, verifyCredential } from '@docknetwork/sdk/utils/vc/credentials';
@@ -227,7 +227,7 @@ class DockWallet {
     const keyPairInstance = getKeypairFromController(this, controller);
 
     // Create keypair document and signer
-    const keyDoc = keyPairInstance.toKeyPair(true);
+    const keyDoc = getKeydocFromPair(keyPairInstance);
     const signer = keyPairInstance.signer();
 
     // Set verification method

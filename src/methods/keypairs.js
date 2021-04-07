@@ -4,16 +4,16 @@ import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 
 const keyConstructors = {
-  Ed25519VerificationKey2018: async (keypairOptions) => {
+  Ed25519VerificationKey2018: (keypairOptions) => {
     return new Ed25519VerificationKey2018(keypairOptions);
   },
-  Ed25519VerificationKey2020: async (keypairOptions) => {
+  Ed25519VerificationKey2020: (keypairOptions) => {
     return new Ed25519VerificationKey2020(keypairOptions);
   },
-  X25519KeyAgreementKey2019: async (keypairOptions) => {
+  X25519KeyAgreementKey2019: (keypairOptions) => {
     return new X25519KeyAgreementKey2019(keypairOptions);
   },
-  X25519KeyAgreementKey2020: async (keypairOptions) => {
+  X25519KeyAgreementKey2020: (keypairOptions) => {
     return new X25519KeyAgreementKey2020(keypairOptions);
   },
 };
@@ -47,4 +47,13 @@ export function getKeypairFromController(wallet, controller) {
     throw new Error(`Unable to determine keypair instance from document`);
   }
   return keyPairInstance;
+}
+
+export function getKeydocFromPair(keyPair) {
+  if (typeof keyPair.toKeyPair === 'function') {
+    return keyPair.toKeyPair(true);
+  } else if (typeof keyPair.export === 'function') {
+    return keyPair.export({ publicKey: true, privateKey: true });
+  }
+  return keyPair;
 }
