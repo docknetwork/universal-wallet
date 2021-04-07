@@ -1,13 +1,30 @@
-import { Ed25519KeyPair } from '@transmute/did-key-ed25519';
+import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
+import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
+import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
+import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 
-export function getKeypairFromDoc({ id, type, controller, publicKeyBase58, privateKeyBase58 }) {
-  // TOOD: proper type detection, move this method
-  return new Ed25519KeyPair({
-    id,
-    controller,
-    publicKeyBase58,
-    privateKeyBase58,
-  });
+const keyConstructors = {
+  Ed25519VerificationKey2018: async (keypairOptions) => {
+    return new Ed25519VerificationKey2018(keypairOptions);
+  },
+  Ed25519VerificationKey2020: async (keypairOptions) => {
+    return new Ed25519VerificationKey2020(keypairOptions);
+  },
+  X25519KeyAgreementKey2019: async (keypairOptions) => {
+    return new X25519KeyAgreementKey2019(keypairOptions);
+  },
+  X25519KeyAgreementKey2020: async (keypairOptions) => {
+    return new X25519KeyAgreementKey2020(keypairOptions);
+  },
+};
+
+export function getKeypairFromDoc(keypairOptions) {
+  const { type } = keypairOptions;
+  const keyConstructor = keyConstructors[type];
+  if (!keyConstructor) {
+    throw new Error(`Unrecognized keypair type to construct: ${type}`);
+  }
+  return keyConstructor(keypairOptions);
 }
 
 export function getKeypairDocFromWallet(wallet, controller) {

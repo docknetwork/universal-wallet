@@ -10,18 +10,8 @@ import MockKak from './mock/kak';
 import keyBase58 from './constants/keys/key-base58.json';
 
 import {
-  WALLET_LOCKED,
-  WALLET_UNLOCKED,
-  WALLET_SIGNED_CREDENTIAL,
   WALLET_UNSIGNED_CREDENTIAL,
-  WALLET_PASSWORD,
 } from './constants';
-
-import {
-  WALLET_DEFAULT_CONTEXT,
-  WALLET_DEFAULT_TYPE,
-  WALLET_DEFAULT_ID,
-} from '../src/constants';
 
 // These tests rely on a local EDV server running on port 8080
 describe('EDV Wallet', () => {

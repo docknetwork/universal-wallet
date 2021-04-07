@@ -1,5 +1,4 @@
-import { X25519KeyPair } from '@transmute/did-key-x25519';
-import { Cipher } from '@transmute/did-key-cipher';
+import { Cipher } from '@digitalbazaar/minimal-cipher';
 
 // NOTE: see https://github.com/digitalbazaar/minimal-cipher for key management examples
 
@@ -15,16 +14,18 @@ export async function lockWalletContents(contents, kp) {
       alg: 'ECDH-ES+A256KW',
     },
   };
-  const recipients = [recipient];
 
+  const recipients = [recipient];
   const keyResolver = ({ id }) => {
+    // cipher requires either json key or X25519KeyAgreementKey2020
+    // TODO: need a method to convert non-X25519KeyAgreementKey2020 to json here
     if (kp.id === id) {
       return kp.toJsonWebKeyPair ? kp.toJsonWebKeyPair(false) : kp;
     }
     throw new Error(`Key ${id} not found`);
   };
 
-  const cipher = new Cipher(X25519KeyPair); // TODO: derive cipher from kp
+  const cipher = new Cipher();
   return await Promise.all(
     contents.map((content) => cipher.encryptObject({
       obj: { ...content },
@@ -35,7 +36,7 @@ export async function lockWalletContents(contents, kp) {
 }
 
 export async function unlockWalletContents(contents, keyAgreementKey) {
-  const cipher = new Cipher(X25519KeyPair); // TODO: derive cipher from kp
+  const cipher = new Cipher();
   return await Promise.all(contents.map((content) => cipher.decryptObject({
     jwe: content,
     keyAgreementKey,
