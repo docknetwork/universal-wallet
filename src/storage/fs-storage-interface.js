@@ -19,7 +19,7 @@ class FSStorageInterface extends StorageInterface {
   }
 
   async get({ id }) {
-    const content = JSON.parse(fs.readFileSync(this.buildFilePath(id)));
+    const content = JSON.parse(fs.readFileSync(this.buildFilePath(id)).toString('utf8'));
     return {
       id,
       content,
@@ -49,13 +49,13 @@ class FSStorageInterface extends StorageInterface {
     return result.length;
   }
 
-  async find({ has, equals } = {}) {
+  async find({ has = undefined, equals = undefined } = {}) {
     ensureExistsOrCreate(this.directory);
     const dirResults = fs.readdirSync(this.directory);
     const documents = dirResults.map((filepath) => {
       if (filepath.indexOf('.json') !== -1) {
         const docId = filepath.replace('.json', '');
-        const content = JSON.parse(fs.readFileSync(this.buildFilePath(filepath)));
+        const content = JSON.parse(fs.readFileSync(this.buildFilePath(filepath)).toString('utf8'));
 
         let matchesQuery = false;
         if (!has && !equals) { // Return all documents

@@ -1,12 +1,7 @@
 import { getKeypairFromDerivedKey } from './keypairs';
 import crypto from '../crypto';
 
-export async function passwordToKey(
-  password,
-  salt = 'salt',
-  iterations = 100000,
-  digest = 'SHA-256',
-) {
+export async function passwordToKey(password, salt = 'salt', iterations = 100000, digest = 'SHA-256') {
   const saltBuffer = Buffer.from(salt);
   const passphraseKey = Buffer.from(password);
   return crypto.subtle
