@@ -27,6 +27,11 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import {
+  issueCredential,
+  verifyCredential,
+} from '@docknetwork/sdk/utils/vc/credentials';
+
+import {
   contentsFromEncryptedWalletCredential,
   exportContentsAsCredential,
   lockWalletContents,
@@ -34,28 +39,16 @@
 } from './methods/contents';
 
 import { passwordToKeypair } from './methods/password';
-
-import VerifiableCredential from '@docknetwork/sdk/verifiable-credential';
-import { issueCredential, verifyCredential } from '@docknetwork/sdk/utils/vc/credentials';
+import {
+  getKeypairFromController,
+  getKeydocFromPair,
+} from './methods/keypairs';
 
 import {
   WALLET_DEFAULT_CONTEXT,
   WALLET_DEFAULT_TYPE,
   WALLET_DEFAULT_ID,
 } from './constants';
-
-const WALLET_CONTENT_TYPES = [
-  // Supported document types
-  'VerifiableCredential',
-  'DIDResolutionResponse',
-  'Currency',
-  'Connection',
-  'MetaData',
-
-  // Supported key types
-  'Ed25519VerificationKey2018',
-  // TODO: add more
-];
 
 function ensureValidContent(content) {
   if (!content['@context']) {
@@ -69,57 +62,12 @@ function ensureValidContent(content) {
   if (!content.type) {
     throw new Error('Content object requires an type property');
   }
-
-  // TODO: determine if we want to support any type of document
-  // my thinking for POC is no
-  const contentTypes = Array.isArray(content.type) ? content.type : [content.type];
-  const isValidType = contentTypes.some((type) => {
-    return WALLET_CONTENT_TYPES.indexOf(type) > -1;
-  });
-
-  if (!isValidType) {
-    throw new Error(`Invalid content types: ${contentTypes}`);
-  }
 }
 
 function ensureWalletUnlocked(wallet) {
   if (wallet.status === 'LOCKED') {
     throw new Error('Wallet is locked!');
   }
-}
-
-function getKeypairDocFromWallet(wallet, controller) {
-  const results = wallet.contents.filter(content => {
-    return content.controller === controller;
-  });
-  return results[0];
-}
-
-import { Ed25519KeyPair } from '@transmute/did-key-ed25519';
-
-function getKeypairFromDoc({ id, type, controller, publicKeyBase58, privateKeyBase58 }) {
-  // TOOD: proper type detection, move this method
-  return new Ed25519KeyPair({
-    id,
-    controller,
-    publicKeyBase58,
-    privateKeyBase58,
-  });
-}
-
-function getKeypairFromController(wallet, controller) {
-  // Determine keypair object from controller input
-  const keyPairDocument = getKeypairDocFromWallet(wallet, controller);
-  if (!keyPairDocument) {
-    throw new Error(`Unable to find keypair in wallet contents with controller: ${controller}`);
-  }
-
-  // Get keypair instance from document
-  const keyPairInstance = getKeypairFromDoc(keyPairDocument);
-  if (!keyPairInstance) {
-    throw new Error(`Unable to determine keypair instance from document`);
-  }
-  return keyPairInstance;
 }
 
 /** The Dock Wallet */
@@ -143,6 +91,9 @@ class DockWallet {
   add(content) {
     ensureWalletUnlocked(this);
     ensureValidContent(content);
+    if (this.has(content.id)) {
+      throw new Error(`Duplication error: ID: ${content.id} already exists`);
+    }
     this.contents.push(content);
     return this;
   }
@@ -157,6 +108,17 @@ class DockWallet {
     ensureWalletUnlocked(this);
     this.contents = this.contents.filter((i) => i.id !== contentId);
     return this;
+  }
+
+  update(content) {
+    ensureWalletUnlocked(this);
+    const contentItems = this.contents.filter((c) => c.id === content.id);
+    if (contentItems.length) {
+      const contentIndex = this.contents.indexOf(contentItems[0]);
+      this.contents[contentIndex] = content;
+    } else {
+      throw new Error(`Cannot find content with ID ${content.id} to update`);
+    }
   }
 
   /**
@@ -221,6 +183,7 @@ class DockWallet {
       throw new Error('Cannot import over existing wallet content.');
     }
 
+    this.id = encryptedWalletCredential.id || WALLET_DEFAULT_ID;
     const keyPair = await passwordToKeypair(password);
     this.contents = await contentsFromEncryptedWalletCredential(
       encryptedWalletCredential,
@@ -250,26 +213,35 @@ class DockWallet {
    * @return {array&lt;any>} List of contents results
    */
   query(search) {
-    const { type, query } = search;
-
-    // TODO: Implement and define params
+    // Really basic "search" of contents
+    // typically a wallet class would extend this method
+    const { equals = {} } = search;
+    return this.contents.filter((content) => {
+      const terms = Object.keys(equals);
+      for (let i = 0; i &lt; terms.length; i++) {
+        const term = terms[i];
+        const termSplit = term.split('.');
+        const termProperty = termSplit[1];
+        if (termSplit[0] === 'content') {
+          if (content[termProperty] === equals[term]) {
+            return true;
+          }
+        } else {
+          throw new Error('Equals terms must be for content');
+        }
+      }
+      return false;
+    });
   }
 
   async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options
-
-    // TODO: we need to construct a did resolver that can resolve did:keys internally? and/or external dids
-
-
-    const result = await verifyCredential(credentialOrPresentation, {
+    // TODO: should we have a default did resolver?
+    return await verifyCredential(credentialOrPresentation, {
       resolver: null,
       compactProof: true,
       forceRevocationCheck: false,
-      // documentLoader: null,
       ...options,
     });
-
-    console.log('result', result);
-    return result;
   }
 
   /**
@@ -279,41 +251,39 @@ class DockWallet {
    * @return {object} An unlocked wallet JSON-LD representation
    */
   async issue(credential, options) {
-    // TODO: support more options? SDK doesnt seem to need whats in the spec
     const {
       controller,
+      issuanceDate,
+      verificationMethod,
     } = options;
 
     // Get keypair instance from controller if it exists in wallet
     const keyPairInstance = getKeypairFromController(this, controller);
 
     // Create keypair document and signer
-    const keyDoc = keyPairInstance.toKeyPair(true);
+    const keyDoc = getKeydocFromPair(keyPairInstance);
     const signer = keyPairInstance.signer();
 
     // Set verification method
-    if (options.verificationMethod) {
-      keyDoc.id = options.verificationMethod;
+    if (verificationMethod) {
+      keyDoc.id = verificationMethod;
     } else {
       const pkEncoded = keyDoc.controller.split(':')[2];
       keyDoc.id = `${keyDoc.controller}#${pkEncoded}`;
     }
 
     // SDK requires keypair property with sign method
+    // SDK mutates sign so that it passes data not object, this hack fixes that
+    async function sign(data) { return this.signer.sign({ data }); }
     keyDoc.keypair = {
-      sign: async function(data) { // SDK mutates sign so that it passes data not object, this hack fixes that
-        return await this.signer.sign({data});
-      }.bind({ signer })
+      sign: sign.bind({ signer }),
     };
 
-    // Assign credential date
-    if (!credential.issuanceDate) {
-      credential.issuanceDate = options.issuanceDate || new Date().toISOString();
-    }
-
     // Sign the VC
-    const signedVC = await issueCredential(keyDoc, credential);
-    return signedVC;
+    return await issueCredential(keyDoc, {
+      ...credential,
+      issuanceDate: credential.issuanceDate || issuanceDate || new Date().toISOString(),
+    });
   }
 
   prove() {
@@ -376,13 +346,13 @@ export default DockWallet;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DockWallet.html">DockWallet</a></li><li><a href="FSStorageInterface.html">FSStorageInterface</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DockWallet.html">DockWallet</a></li><li><a href="EDVHTTPStorageInterface.html">EDVHTTPStorageInterface</a></li><li><a href="FSStorageInterface.html">FSStorageInterface</a></li><li><a href="StorageInterface.html">StorageInterface</a></li><li><a href="StorageWallet.html">StorageWallet</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 29 2021 19:51:00 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Apr 07 2021 19:11:43 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

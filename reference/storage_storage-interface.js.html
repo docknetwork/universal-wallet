@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: storage/storage-interface.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,46 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: storage/storage-interface.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** This class contains the base methods that must be overridden in any storage interface */
+class StorageInterface {
+  async get() {
+    throw new Error('StorageInterface get method must be declared in inherited class');
+  }
 
+  async update() {
+    throw new Error('StorageInterface update method must be declared in inherited class');
+  }
 
-    <h3> </h3>
+  async delete() {
+    throw new Error('StorageInterface delete method must be declared in inherited class');
+  }
 
+  async insert() {
+    throw new Error('StorageInterface insert method must be declared in inherited class');
+  }
 
+  async count() {
+    throw new Error('StorageInterface count method must be declared in inherited class');
+  }
 
+  async find() {
+    throw new Error('StorageInterface find method must be declared in inherited class');
+  }
+}
 
-
-
-
-
-
-
-    
-
-
-
-
-
+export default StorageInterface;
+</code></pre>
+        </article>
+    </section>
 
 
 
