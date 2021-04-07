@@ -6,23 +6,28 @@ import {
 } from '../constants';
 
 export async function lockWalletContents(contents, kp) {
-  const recipient = {
+  // Single recipient, the key who locked the wallet
+  const recipients = [{
     header: {
       kid: kp.id,
       alg: 'ECDH-ES+A256KW',
     },
-  };
+  }];
 
-  const recipients = [recipient];
+  // Hardcoded keyResolver to return kp which was used to lock it
   const keyResolver = ({ id }) => {
-    // cipher requires either json key or X25519KeyAgreementKey2020
-    // TODO: need a method to convert non-X25519KeyAgreementKey2020 to json here
     if (kp.id === id) {
-      return kp.toJsonWebKeyPair ? kp.toJsonWebKeyPair(false) : kp;
+      const kpResult = kp.toJsonWebKeyPair ? kp.toJsonWebKeyPair(false) : kp;
+      if (kpResult.type !== 'X25519KeyAgreementKey2020' && kpResult.type !== 'JsonWebKey2020') {
+        // TODO: need a method to convert non-X25519KeyAgreementKey2020 to json here
+        throw new Error(`Cipher expects either X25519KeyAgreementKey2020 or JsonWebKey2020, conversion not yet supported.`);
+      }
+      return kpResult;
     }
     throw new Error(`Key ${id} not found`);
   };
 
+  // Encrypt the wallet
   const cipher = new Cipher();
   return await Promise.all(
     contents.map((content) => cipher.encryptObject({
@@ -57,7 +62,6 @@ export async function exportContentsAsCredential(contents, kp, issuanceDate = ne
 
   return {
     '@context': WALLET_DEFAULT_CONTEXT,
-    // consider using content id of ciphertext here...
     id: `${kp.controller}#encrypted-wallet`,
     type: WALLET_DEFAULT_ENCRYPTED_TYPE,
     issuer: kp.controller,
