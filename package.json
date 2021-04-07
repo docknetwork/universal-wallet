@@ -63,6 +63,8 @@
     "fetch-blob": "2.1.1"
   },
   "dependencies": {
+    "@digitalbazaar/ed25519-verification-key-2018": "digitalbazaar/ed25519-verification-key-2018",
+    "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
     "@docknetwork/sdk": "0.4.2",
     "@peculiar/webcrypto": "^1.1.6",
     "@transmute/did-key-cipher": "0.2.1-unstable.31",

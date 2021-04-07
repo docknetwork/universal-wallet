@@ -1,4 +1,6 @@
-import { X25519KeyPair } from '@transmute/did-key-x25519';
+import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
+import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
+
 import crypto from '../crypto';
 
 export async function passwordToKey(
@@ -36,11 +38,34 @@ export async function passwordToKey(
     .then((buffer) => new Uint8Array(buffer));
 }
 
-export async function getKeypairFromDerivedKey(derivedKey) {
-  const kp = await X25519KeyPair.generate({
-    secureRandom: () => derivedKey,
-  });
-  kp.id = kp.controller + kp.id;
+const keyGenerators = {
+  Ed25519VerificationKey2018: async (seed) => {
+    return Ed25519VerificationKey2018.generate({
+      seed,
+    });
+  },
+  X25519KeyAgreementKey2019: async (seed) => {
+    const edPair = await Ed25519VerificationKey2018.generate({
+      seed,
+    });
+    return X25519KeyAgreementKey2019.fromEdKeyPair({keyPair: edPair});
+  },
+};
+
+export async function getKeypairFromDerivedKey(derivedKey, type = 'X25519KeyAgreementKey2019') {
+  const keyGenerator = keyGenerators[type];
+  if (!keyGenerator) {
+    throw new Error(`Unable to generate keypair for type: ${type}`);
+  }
+
+  // Generate keypair
+  const kp = await keyGenerator(derivedKey);
+
+  // Assign controller and ID as fingerprint
+  const fingerprint = kp.fingerprint();
+  kp.controller = `did:key:${fingerprint}`;
+  kp.id = `${kp.controller}#${fingerprint}`;
+
   return kp;
 }
 

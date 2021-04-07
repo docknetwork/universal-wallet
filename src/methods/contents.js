@@ -19,7 +19,7 @@ export async function lockWalletContents(contents, kp) {
 
   const keyResolver = ({ id }) => {
     if (kp.id === id) {
-      return kp.toJsonWebKeyPair(false);
+      return kp.toJsonWebKeyPair ? kp.toJsonWebKeyPair(false) : kp;
     }
     throw new Error(`Key ${id} not found`);
   };

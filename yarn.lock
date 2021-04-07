@@ -1974,6 +1974,15 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
+"@digitalbazaar/ed25519-verification-key-2018@digitalbazaar/ed25519-verification-key-2018":
+  version "3.1.1-0"
+  resolved "https://codeload.github.com/digitalbazaar/ed25519-verification-key-2018/tar.gz/7adc139e08efa2f55eb272231c1b0c2d6bcd5a39"
+  dependencies:
+    "@stablelib/ed25519" "^1.0.1"
+    base58-universal "^1.0.0"
+    crypto-ld "^5.0.0"
+    esm "^3.2.25"
+
 "@digitalbazaar/ed25519-verification-key-2020@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@digitalbazaar/ed25519-verification-key-2020/-/ed25519-verification-key-2020-2.0.0.tgz#6951b154a5f92dbec5b0f47a4446dac196d90733"
@@ -2003,7 +2012,7 @@
     isomorphic-webcrypto "^2.3.6"
     universal-base64 "^2.1.0"
 
-"@digitalbazaar/x25519-key-agreement-key-2019@^5.0.1":
+"@digitalbazaar/x25519-key-agreement-key-2019@5.0.1", "@digitalbazaar/x25519-key-agreement-key-2019@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@digitalbazaar/x25519-key-agreement-key-2019/-/x25519-key-agreement-key-2019-5.0.1.tgz#b31cbb83f38ddb0e01a1a2239175d2846b06f93d"
   integrity sha512-ZFY3oycWGRtt+b4T8fRs1S5J++hK2rBitpWd75tYZ/ttB+wqajBl66oWt7XgPrwbUMcQ2z4zw+r1wgCJexD2rw==
