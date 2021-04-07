@@ -41,7 +41,7 @@ describe('Wallet - Credential issuance and verification', () => {
     });
     if (!verifyResult.verified) {
       console.error(verifyResult.error);
-      verifyResult.error.errors.forEach(error => console.error('verifyResult error:', error));
+      verifyResult.error.errors.forEach((error) => console.error('verifyResult error:', error));
     }
     expect(verifyResult.verified).toBe(true);
   });

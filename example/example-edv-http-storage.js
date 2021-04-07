@@ -19,7 +19,7 @@ import MockKak from '../tests/mock/kak';
     With that EDV ID, call connectTo on the storage interface to initialize an EDV client
     Call insert on the storage interface, a document with no ID has one generated randomly
     Call get on the storage interface passing the document ID to decrypt and read the contents
-**/
+* */
 async function main() {
   // Get mock keys
   // Ideally you would use a key management system
@@ -30,7 +30,7 @@ async function main() {
     keyAgreementKey,
     hmac,
   };
-  console.log('Using keys:', keys)
+  console.log('Using keys:', keys);
 
   const { controller } = keyBase58;
   const capability = undefined; // use defaults
@@ -50,7 +50,7 @@ async function main() {
   // Create or find primary EDV for this controller
   let edvId;
   try {
-    console.log('Creating EDV with controller:', controller)
+    console.log('Creating EDV with controller:', controller);
     edvId = await storageInterface.createEdv({
       sequence: 0, // on init the sequence must be 0 and is required
       controller,
@@ -77,7 +77,7 @@ async function main() {
   };
 
   // Create
-  console.log('Creating new EDV document:', document)
+  console.log('Creating new EDV document:', document);
   const { id } = await storageInterface.insert({
     document,
   });
@@ -88,10 +88,10 @@ async function main() {
     id,
   });
 
-  console.log('Read document content:', documentResult.content)
+  console.log('Read document content:', documentResult.content);
 
   // Update
-  console.log(`Updating document contents...`);
+  console.log('Updating document contents...');
   await storageInterface.update({
     document: {
       ...documentResult,
@@ -104,10 +104,10 @@ async function main() {
   const documentResultUpdated = await storageInterface.get({
     id,
   });
-  console.log('Documented updated with new content:', documentResultUpdated.content)
+  console.log('Documented updated with new content:', documentResultUpdated.content);
 
   // Remove
-  console.log(`Deleting document from EDV...`);
+  console.log('Deleting document from EDV...');
   await storageInterface.delete({
     document: documentResultUpdated,
   });
@@ -119,9 +119,9 @@ async function main() {
 
   // Finish
   if (documentDeleted.meta.deleted) {
-    console.log(`Document has been deleted, example success!`);
+    console.log('Document has been deleted, example success!');
   } else {
-    console.error(`Document still exists, example failed`, documentDeleted);
+    console.error('Document still exists, example failed', documentDeleted);
   }
 }
 

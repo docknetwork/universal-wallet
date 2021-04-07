@@ -80,7 +80,7 @@ describe('EDV Wallet', () => {
       credentialSubject: {
         ...WALLET_UNSIGNED_CREDENTIAL.credentialSubject,
         id: controller,
-      }
+      },
     };
     edvWallet.update(updatedContent);
     await edvWallet.sync();

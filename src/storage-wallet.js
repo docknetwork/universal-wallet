@@ -10,7 +10,7 @@ class StorageWallet extends DockWallet {
   }
 
   add(content) {
-    super.add(content)
+    super.add(content);
     this.promises.push(this.insertToStorage(content));
   }
 
@@ -27,7 +27,7 @@ class StorageWallet extends DockWallet {
   async query(search) {
     // Query storage interface and map into wallet contents
     const { documents } = await this.storageInterface.find(search);
-    return documents.map(document => document.content);
+    return documents.map((document) => document.content);
   }
 
   async load() {
@@ -36,7 +36,7 @@ class StorageWallet extends DockWallet {
 
     // Format to wallet contents
     if (documents) {
-      documents.forEach(document => super.add(document.content));
+      documents.forEach((document) => super.add(document.content));
     }
     return this.contents;
   }
@@ -93,7 +93,7 @@ class StorageWallet extends DockWallet {
     // A user will call this method to ensure storage interface requests finish
     // we do this because wallet doesnt always require blocking operations
     // depending on the storage interface used
-    const promises = this.promises;
+    const { promises } = this;
     this.promises = [];
     if (promises.length) {
       await Promise.all(promises);

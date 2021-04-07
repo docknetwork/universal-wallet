@@ -1,3 +1,5 @@
+import VerifiableCredential from '@docknetwork/sdk/verifiable-credential';
+import { issueCredential, verifyCredential } from '@docknetwork/sdk/utils/vc/credentials';
 import {
   contentsFromEncryptedWalletCredential,
   exportContentsAsCredential,
@@ -6,10 +8,9 @@ import {
 } from './methods/contents';
 
 import { passwordToKeypair } from './methods/password';
-import { getKeypairFromDoc, getKeypairDocFromWallet, getKeypairFromController, getKeydocFromPair } from './methods/keypairs';
-
-import VerifiableCredential from '@docknetwork/sdk/verifiable-credential';
-import { issueCredential, verifyCredential } from '@docknetwork/sdk/utils/vc/credentials';
+import {
+  getKeypairFromDoc, getKeypairDocFromWallet, getKeypairFromController, getKeydocFromPair,
+} from './methods/keypairs';
 
 import {
   WALLET_DEFAULT_CONTEXT,
@@ -79,7 +80,7 @@ class DockWallet {
 
   update(content) {
     ensureWalletUnlocked(this);
-    const contentItems = this.contents.filter(c => c.id === content.id);
+    const contentItems = this.contents.filter((c) => c.id === content.id);
     if (contentItems.length) {
       const contentIndex = this.contents.indexOf(contentItems[0]);
       this.contents[contentIndex] = content;
@@ -183,8 +184,8 @@ class DockWallet {
     // Really basic "search" of contents
     // typically a wallet class would extend this method
     const { equals = {} } = search;
-    return this.contents.filter(content => {
-      for (let term in equals) {
+    return this.contents.filter((content) => {
+      for (const term in equals) {
         const termSplit = term.split('.');
         const termProperty = termSplit[1];
         if (termSplit[0] === 'content') {
@@ -192,7 +193,7 @@ class DockWallet {
             return true;
           }
         } else {
-          throw new Error(`Equals terms must be for content`);
+          throw new Error('Equals terms must be for content');
         }
       }
       return false;
@@ -201,13 +202,12 @@ class DockWallet {
 
   async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options
     // TODO: should we have a default did resolver?
-    const result = await verifyCredential(credentialOrPresentation, {
+    return await verifyCredential(credentialOrPresentation, {
       resolver: null,
       compactProof: true,
       forceRevocationCheck: false,
       ...options,
     });
-    return result;
   }
 
   /**
@@ -240,9 +240,9 @@ class DockWallet {
 
     // SDK requires keypair property with sign method
     keyDoc.keypair = {
-      sign: async function(data) { // SDK mutates sign so that it passes data not object, this hack fixes that
-        return await this.signer.sign({data});
-      }.bind({ signer })
+      sign: async function (data) { // SDK mutates sign so that it passes data not object, this hack fixes that
+        return await this.signer.sign({ data });
+      }.bind({ signer }),
     };
 
     // Assign credential date
@@ -251,8 +251,7 @@ class DockWallet {
     }
 
     // Sign the VC
-    const signedVC = await issueCredential(keyDoc, credential);
-    return signedVC;
+    return await issueCredential(keyDoc, credential);
   }
 
   prove() {

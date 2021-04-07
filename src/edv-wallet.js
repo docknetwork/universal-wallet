@@ -4,7 +4,7 @@ import EDVHTTPStorageInterface from './storage/edv-http-storage';
 class EDVWallet extends StorageWallet {
   constructor(id, storageOptions = {}) {
     if (!id) {
-      throw new Error(`EDVWallet requires valid URI ID parameter`);
+      throw new Error('EDVWallet requires valid URI ID parameter');
     }
 
     // Allow user to pass pre-initialized interface or construct a default one

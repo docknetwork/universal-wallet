@@ -4,18 +4,10 @@ import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 
 const keyConstructors = {
-  Ed25519VerificationKey2018: (keypairOptions) => {
-    return new Ed25519VerificationKey2018(keypairOptions);
-  },
-  Ed25519VerificationKey2020: (keypairOptions) => {
-    return new Ed25519VerificationKey2020(keypairOptions);
-  },
-  X25519KeyAgreementKey2019: (keypairOptions) => {
-    return new X25519KeyAgreementKey2019(keypairOptions);
-  },
-  X25519KeyAgreementKey2020: (keypairOptions) => {
-    return new X25519KeyAgreementKey2020(keypairOptions);
-  },
+  Ed25519VerificationKey2018: (keypairOptions) => new Ed25519VerificationKey2018(keypairOptions),
+  Ed25519VerificationKey2020: (keypairOptions) => new Ed25519VerificationKey2020(keypairOptions),
+  X25519KeyAgreementKey2019: (keypairOptions) => new X25519KeyAgreementKey2019(keypairOptions),
+  X25519KeyAgreementKey2020: (keypairOptions) => new X25519KeyAgreementKey2020(keypairOptions),
 };
 
 export function getKeypairFromDoc(keypairOptions) {
@@ -28,9 +20,7 @@ export function getKeypairFromDoc(keypairOptions) {
 }
 
 export function getKeypairDocFromWallet(wallet, controller) {
-  const results = wallet.contents.filter(content => {
-    return content.controller === controller;
-  });
+  const results = wallet.contents.filter((content) => content.controller === controller);
   return results[0];
 }
 
@@ -44,7 +34,7 @@ export function getKeypairFromController(wallet, controller) {
   // Get keypair instance from document
   const keyPairInstance = getKeypairFromDoc(keyPairDocument);
   if (!keyPairInstance) {
-    throw new Error(`Unable to determine keypair instance from document`);
+    throw new Error('Unable to determine keypair instance from document');
   }
   return keyPairInstance;
 }

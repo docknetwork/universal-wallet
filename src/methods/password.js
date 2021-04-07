@@ -5,22 +5,20 @@ import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-
 import crypto from '../crypto';
 
 const keyGenerators = {
-  Ed25519VerificationKey2018: async (seed) => {
-    return Ed25519VerificationKey2018.generate({
-      seed,
-    });
-  },
+  Ed25519VerificationKey2018: async (seed) => Ed25519VerificationKey2018.generate({
+    seed,
+  }),
   X25519KeyAgreementKey2019: async (seed) => {
     // X25519KeyAgreementKey2019 doesnt support seed in generate method, so we will derive
     // from a Ed25519VerificationKey2018 keypair
     const edPair = await Ed25519VerificationKey2018.generate({ seed });
-    return X25519KeyAgreementKey2019.fromEdKeyPair({keyPair: edPair});
+    return X25519KeyAgreementKey2019.fromEdKeyPair({ keyPair: edPair });
   },
   X25519KeyAgreementKey2020: async (seed) => {
     // X25519KeyAgreementKey2020 doesnt support seed in generate method, so we will derive
     // from a Ed25519VerificationKey2020 keypair
     const edPair = await Ed25519VerificationKey2020.generate({ seed });
-    return X25519KeyAgreementKey2020.fromEd25519VerificationKey2020({keyPair: edPair});
+    return X25519KeyAgreementKey2020.fromEd25519VerificationKey2020({ keyPair: edPair });
   },
 };
 
@@ -78,6 +76,5 @@ export async function getKeypairFromDerivedKey(derivedKey, type = 'X25519KeyAgre
 
 export async function passwordToKeypair(password) {
   const derivedKey = await passwordToKey(password);
-  const keypair = await getKeypairFromDerivedKey(derivedKey);
-  return keypair;
+  return await getKeypairFromDerivedKey(derivedKey);
 }

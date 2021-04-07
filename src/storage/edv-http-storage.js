@@ -3,10 +3,12 @@ import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */
 class EDVHTTPStorageInterface extends StorageInterface {
-  constructor({ url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver }) {
+  constructor({
+    url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver,
+  }) {
     super();
     if (!url) {
-      throw new Error(`EDVHTTPStorageInterface requires url parameter`);
+      throw new Error('EDVHTTPStorageInterface requires url parameter');
     }
 
     let edvId;
@@ -31,7 +33,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
     this.keyResolver = keyResolver;
     if (!this.keyResolver) {
       this.keyResolver = ({ id }) => {
-        console.log('Debug key resolve:', id)
+        console.log('Debug key resolve:', id);
         if (id === this.keys.keyAgreementKey.id) {
           return this.keys.keyAgreementKey;
         } else if (id === this.keys.hmac.id) {
@@ -47,7 +49,9 @@ class EDVHTTPStorageInterface extends StorageInterface {
     }
   }
 
-  async get({ id, invocationSigner, capability, recipients }) {
+  async get({
+    id, invocationSigner, capability, recipients,
+  }) {
     if (!this.documents.get(id)) {
       const newDocument = new EdvDocument({
         id,
@@ -63,22 +67,24 @@ class EDVHTTPStorageInterface extends StorageInterface {
     }
 
     const doc = this.documents.get(id);
-    const readResult = await doc.read();
-    return readResult;
+    return await doc.read();
   }
 
-  async update({ document, invocationSigner, capability, recipients }) {
-    const updateResult = await this.client.update({
+  async update({
+    document, invocationSigner, capability, recipients,
+  }) {
+    return await this.client.update({
       recipients,
       doc: document,
       invocationSigner: invocationSigner || this.invocationSigner,
       capability: capability || this.capability,
       keyResolver: this.keyResolver,
     });
-    return updateResult;
   }
 
-  async delete({ document, invocationSigner, capability, recipients }) {
+  async delete({
+    document, invocationSigner, capability, recipients,
+  }) {
     await this.client.delete({
       recipients,
       doc: document,
@@ -90,18 +96,21 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return document.id;
   }
 
-  async insert({ document, invocationSigner, capability, recipients }) {
-    const insertResult = await this.client.insert({
+  async insert({
+    document, invocationSigner, capability, recipients,
+  }) {
+    return await this.client.insert({
       recipients,
       doc: document,
       invocationSigner: invocationSigner || this.invocationSigner,
       capability: capability || this.capability,
     });
-    return insertResult;
   }
 
-  async count({ equals, has, invocationSigner, capability } = {}) {
-    const {count} = await this.find({
+  async count({
+    equals, has, invocationSigner, capability,
+  } = {}) {
+    const { count } = await this.find({
       equals,
       has,
       count: true,
@@ -111,10 +120,12 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return count;
   }
 
-  async find({ equals, has, count = false, invocationSigner, capability } = {}) {
+  async find({
+    equals, has, count = false, invocationSigner, capability,
+  } = {}) {
     const { keyAgreementKey, hmac } = this.keys;
     try {
-      const result = await this.client.find({
+      return await this.client.find({
         equals: (equals || has) ? equals : undefined,
         has: (equals || has) ? has : 'content.id',
         count,
@@ -123,7 +134,6 @@ class EDVHTTPStorageInterface extends StorageInterface {
         invocationSigner: invocationSigner || this.invocationSigner,
         capability: capability || this.capability,
       });
-      return result;
     } catch (e) { // Find can result in HTTP not found error if query is empty for new EDV
       return { documents: [] };
     }
@@ -131,7 +141,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
   connectTo(id) {
     if (this.client) {
-      throw new Error(`Already connected`);
+      throw new Error('Already connected');
     }
 
     if (!id) {
@@ -151,23 +161,21 @@ class EDVHTTPStorageInterface extends StorageInterface {
   }
 
   async getConfig(id) {
-    const remoteConfig = await EdvClient.getConfig({
+    return await EdvClient.getConfig({
       url: `${this.serverUrl}/edvs`,
       id,
       httpsAgent: this.httpsAgent,
       headers: this.defaultHeaders,
     });
-    return remoteConfig;
   }
 
   async findConfigFor(controller, referenceId = 'primary') {
     try {
-      const remoteConfig = await EdvClient.findConfig({
+      return await EdvClient.findConfig({
         url: `${this.serverUrl}/edvs`,
         controller,
         referenceId,
       });
-      return remoteConfig;
     } catch (e) {
       return null;
     }
@@ -183,14 +191,16 @@ class EDVHTTPStorageInterface extends StorageInterface {
    *   headers object to use when making requests.
    * @returns {Promise<string>} - Resolves to the ID for the created EDV.
    */
-  async createEdv({ controller, invocationSigner, capability, httpsAgent, headers, sequence = 0, referenceId = 'primary' }) {
+  async createEdv({
+    controller, invocationSigner, capability, httpsAgent, headers, sequence = 0, referenceId = 'primary',
+  }) {
     const { keyAgreementKey, hmac } = this.keys;
     const config = {
       sequence,
       controller,
       referenceId,
-      keyAgreementKey: {id: keyAgreementKey.id, type: keyAgreementKey.type},
-      hmac: {id: hmac.id, type: hmac.type}
+      keyAgreementKey: { id: keyAgreementKey.id, type: keyAgreementKey.type },
+      hmac: { id: hmac.id, type: hmac.type },
     };
 
     try {

@@ -10,7 +10,7 @@ const walletId = 'mywallet';
 /**
   This example creates a filesystem stored wallet. It's not encrypted, it's mostly
   as an example of creating a custom storage interface.
-**/
+* */
 async function main() {
   console.log('Loading filesystem wallet:', walletId);
   const fsWallet = new FSWallet(walletId);

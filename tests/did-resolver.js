@@ -10,7 +10,7 @@ export default class DIDKeyResolver extends DIDResolver {
   }
 
   async resolve(did) {
-    const didDocument = await didKeyDriver.get({did});
+    const didDocument = await didKeyDriver.get({ did });
     // HACK: set context manually as current version of didKeyDriver has an invalid one that
     // causes sdk verification to fail
     // didDocument['@context'] = ['https://www.w3.org/ns/did/v1'];

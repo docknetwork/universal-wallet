@@ -63,8 +63,8 @@ export default async function useStorageWallet(wallet) {
 
     // Remove wallet contents
     console.log('Removing wallet contents from storage...');
-    wallet.contents.forEach(content => {
-      console.log('\tRemoving:', content.id)
+    wallet.contents.forEach((content) => {
+      console.log('\tRemoving:', content.id);
       wallet.remove(content.id);
     });
 

@@ -7,7 +7,6 @@ import {
   KEY_JWK,
 } from './constants/keys';
 
-
 describe('Wallet - Key storage and usage', () => {
   const wallet = new DockWallet();
 

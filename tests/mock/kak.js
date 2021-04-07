@@ -3,13 +3,14 @@
  */
 import { encode, decode } from 'base58-universal';
 import nacl from 'tweetnacl';
+
 export { TextEncoder } from 'util';
 
 // ensures tests use the same KaK for each test.
 const _secretKey = new TextEncoder('utf-8').encode('testKaK0123456789testKaK01234567');
 
 export default class MockKak {
-  constructor({secretKey = _secretKey} = {}) {
+  constructor({ secretKey = _secretKey } = {}) {
     const keyPair = nacl.box.keyPair.fromSecretKey(secretKey);
     this.id = 'urn:123',
     this.type = 'X25519KeyAgreementKey2019';
@@ -18,7 +19,7 @@ export default class MockKak {
     this.publicKeyBase58 = encode(this.publicKey);
   }
 
-  async deriveSecret({publicKey}) {
+  async deriveSecret({ publicKey }) {
     const remotePublicKey = decode(publicKey.publicKeyBase58);
     return nacl.scalarMult(this.privateKey, remotePublicKey);
   }

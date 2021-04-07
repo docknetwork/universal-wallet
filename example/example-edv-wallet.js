@@ -13,7 +13,7 @@ import useStorageWallet from './use-storage-wallet';
 
 /**
   Currently this example requires that you run a secure data vault server locally
-**/
+* */
 async function main() {
   // Get mock keys
   // Ideally you would use a key management system
@@ -24,7 +24,7 @@ async function main() {
     keyAgreementKey,
     hmac,
   };
-  console.log('Using keys:', keys)
+  console.log('Using keys:', keys);
 
   const { controller } = keyBase58;
   const invocationSigner = getKeypairFromDoc(keyBase58); // hacky mock signer

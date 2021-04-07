@@ -1,5 +1,5 @@
-import StorageInterface from './storage-interface';
 import fs from 'fs';
+import StorageInterface from './storage-interface';
 
 function ensureExistsOrCreate(directory) {
   if (!fs.existsSync(directory)) {
@@ -8,7 +8,7 @@ function ensureExistsOrCreate(directory) {
 }
 
 function generateDocumentId() {
-  return 'doc' + Math.floor(Math.random() * 100); // TODO: non-hacky random
+  return `doc${Math.floor(Math.random() * 100)}`; // TODO: non-hacky random
 }
 
 /** An example file system storage interface implementation. This is not secure and shouldn't be used in production */
@@ -52,7 +52,7 @@ class FSStorageInterface extends StorageInterface {
   async find({ has, equals } = {}) {
     ensureExistsOrCreate(this.directory);
     const dirResults = fs.readdirSync(this.directory);
-    const documents = dirResults.map(filepath => {
+    const documents = dirResults.map((filepath) => {
       if (filepath.indexOf('.json') !== -1) {
         const docId = filepath.replace('.json', '');
         const content = JSON.parse(fs.readFileSync(this.buildFilePath(filepath)));
@@ -71,7 +71,7 @@ class FSStorageInterface extends StorageInterface {
           };
         }
       }
-    }).filter(value => !!value);
+    }).filter((value) => !!value);
     return { documents };
   }
 

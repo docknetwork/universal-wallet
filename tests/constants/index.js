@@ -2,6 +2,7 @@ import WALLET_LOCKED from './locked-wallet.json';
 import WALLET_UNLOCKED from './unlocked-wallet.json';
 import WALLET_SIGNED_CREDENTIAL from './wallet-content-item.json';
 import WALLET_UNSIGNED_CREDENTIAL from './unsigned-credential.json';
+
 export * from './keys';
 
 export const WALLET_PASSWORD = 'correct horse battery staple';
