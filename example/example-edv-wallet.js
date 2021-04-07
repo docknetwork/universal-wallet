@@ -5,11 +5,15 @@ import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 import EDVWallet from '../src/edv-wallet';
 
-import keyBase58 from '../tests/constants/keys/key-base58.json';
+import {
+  KEY_KAK,
+  KEY_LOCAL,
+} from '../tests/constants/keys';
 import MockHmac from '../tests/mock/hmac';
-import MockKak from '../tests/mock/kak';
 
 import useStorageWallet from './use-storage-wallet';
+
+import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
 
 /**
   Currently this example requires that you run a secure data vault server locally
@@ -19,16 +23,17 @@ async function main() {
   // Ideally you would use a key management system
   // See readme for more: https://github.com/digitalbazaar/edv-client
   const hmac = await MockHmac.create(); // TODO: replace mock example with actual crypto classes
-  const keyAgreementKey = new MockKak(); // TODO: replace mock example with actual crypto classes
+  const keyAgreementKey = new X25519KeyAgreementKey2019(KEY_KAK);
   const keys = {
     keyAgreementKey,
     hmac,
   };
   console.log('Using keys:', keys);
 
-  const { controller } = keyBase58;
-  const invocationSigner = getKeypairFromDoc(keyBase58); // hacky mock signer
+  const { controller } = KEY_LOCAL;
+  const invocationSigner = getKeypairFromDoc(KEY_LOCAL); // hacky mock signer
   invocationSigner.sign = invocationSigner.signer().sign;
+  console.log('invocationSigner:', invocationSigner);
 
   // Creating the EDV is considered out of band for the EDVWallet class, so we do it here through the storage interface
   // in a real world scenario, the creation may be done differently or require payment
@@ -41,6 +46,7 @@ async function main() {
   let walletId;
   const existingConfig = await storageInterface.findConfigFor(controller);
   if (!existingConfig) {
+    console.log('Creating new wallet EDV');
     walletId = await storageInterface.createEdv({
       sequence: 0, // on init the sequence must be 0 and is required
       referenceId: 'primary',
@@ -48,6 +54,7 @@ async function main() {
     });
   } else {
     walletId = existingConfig.id;
+    console.log('Found existing wallet EDV');
   }
 
   // Create a wallet instance for this EDV/wallet ID

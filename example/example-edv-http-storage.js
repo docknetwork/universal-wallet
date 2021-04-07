@@ -1,13 +1,16 @@
 /*
   EDV HTTP Storage Interface Example
 */
+import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import DockWallet from '../src/dock-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
-// import keyAgreementKeyJSON from '../tests/constants/keys/key-agreement-key.json';
-import keyBase58 from '../tests/constants/keys/key-base58.json';
 import MockHmac from '../tests/mock/hmac';
-import MockKak from '../tests/mock/kak';
+
+import {
+  KEY_KAK,
+  KEY_LOCAL,
+} from '../tests/constants/keys';
 
 /**
   Currently this example requires that you run a secure data vault server locally
@@ -25,16 +28,16 @@ async function main() {
   // Ideally you would use a key management system
   // See readme for more: https://github.com/digitalbazaar/edv-client
   const hmac = await MockHmac.create(); // TODO: replace mock example with actual crypto classes
-  const keyAgreementKey = new MockKak(); // TODO: replace mock example with actual crypto classes
+  const keyAgreementKey = new X25519KeyAgreementKey2019(KEY_KAK);
   const keys = {
     keyAgreementKey,
     hmac,
   };
   console.log('Using keys:', keys);
 
-  const { controller } = keyBase58;
+  const { controller } = KEY_LOCAL;
   const capability = undefined; // use defaults
-  const invocationSigner = getKeypairFromDoc(keyBase58); // hacky mock signer
+  const invocationSigner = getKeypairFromDoc(KEY_LOCAL); // hacky mock signer
   invocationSigner.sign = invocationSigner.signer().sign;
 
   // Create a storage interface pointing to a local server

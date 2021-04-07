@@ -7,6 +7,9 @@ const keyGenerators = {
   Ed25519VerificationKey2018: async (seed) => Ed25519VerificationKey2018.generate({
     seed,
   }),
+  Ed25519VerificationKey2020: async (seed) => Ed25519VerificationKey2020.generate({
+    seed,
+  }),
   X25519KeyAgreementKey2019: async (seed) => {
     // X25519KeyAgreementKey2019 doesnt support seed in generate method, so we will derive
     // from a Ed25519VerificationKey2018 keypair
