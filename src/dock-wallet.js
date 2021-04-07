@@ -1,5 +1,8 @@
-import VerifiableCredential from '@docknetwork/sdk/verifiable-credential';
-import { issueCredential, verifyCredential } from '@docknetwork/sdk/utils/vc/credentials';
+import {
+  issueCredential,
+  verifyCredential,
+} from '@docknetwork/sdk/utils/vc/credentials';
+
 import {
   contentsFromEncryptedWalletCredential,
   exportContentsAsCredential,
@@ -9,7 +12,8 @@ import {
 
 import { passwordToKeypair } from './methods/password';
 import {
-  getKeypairFromDoc, getKeypairDocFromWallet, getKeypairFromController, getKeydocFromPair,
+  getKeypairFromController,
+  getKeydocFromPair,
 } from './methods/keypairs';
 
 import {
@@ -185,7 +189,9 @@ class DockWallet {
     // typically a wallet class would extend this method
     const { equals = {} } = search;
     return this.contents.filter((content) => {
-      for (const term in equals) {
+      const terms = Object.keys(equals);
+      for (let i = 0; i < terms.length; i++) {
+        const term = terms[i];
         const termSplit = term.split('.');
         const termProperty = termSplit[1];
         if (termSplit[0] === 'content') {
@@ -239,19 +245,17 @@ class DockWallet {
     }
 
     // SDK requires keypair property with sign method
+    // SDK mutates sign so that it passes data not object, this hack fixes that
+    async function sign(data) { return this.signer.sign({ data }); }
     keyDoc.keypair = {
-      sign: async function (data) { // SDK mutates sign so that it passes data not object, this hack fixes that
-        return await this.signer.sign({ data });
-      }.bind({ signer }),
+      sign: sign.bind({ signer }),
     };
 
-    // Assign credential date
-    if (!credential.issuanceDate) {
-      credential.issuanceDate = issuanceDate || new Date().toISOString();
-    }
-
     // Sign the VC
-    return await issueCredential(keyDoc, credential);
+    return await issueCredential(keyDoc, {
+      ...credential,
+      issuanceDate: credential.issuanceDate || issuanceDate || new Date().toISOString(),
+    });
   }
 
   prove() {

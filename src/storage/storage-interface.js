@@ -1,9 +1,5 @@
 /** This class contains the base methods that must be overridden in any storage interface */
 class StorageInterface {
-  constructor() {
-    // noop for now
-  }
-
   async get() {
     throw new Error('StorageInterface get method must be declared in inherited class');
   }

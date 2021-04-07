@@ -71,6 +71,8 @@ class FSStorageInterface extends StorageInterface {
           };
         }
       }
+
+      return null;
     }).filter((value) => !!value);
     return { documents };
   }

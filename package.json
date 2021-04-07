@@ -34,7 +34,7 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
-    "lint": "eslint \"{src,tests,example}/**/*.js\"",
+    "lint": "eslint \"src/**/*.js\"",
     "build": "rollup -c",
     "watch": "rollup -c -w",
     "example-fs-wallet": "npx babel-node example/example-fs-wallet",
@@ -71,6 +71,7 @@
     "@docknetwork/sdk": "0.4.2",
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
+    "base58-universal": "1.0.0",
     "did-method-key": "https://github.com/digitalbazaar/did-method-key-js#v1.x",
     "edv-client": "^8.0.0"
   }

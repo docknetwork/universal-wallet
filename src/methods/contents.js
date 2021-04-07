@@ -1,7 +1,5 @@
 import { Cipher } from '@digitalbazaar/minimal-cipher';
 
-// NOTE: see https://github.com/digitalbazaar/minimal-cipher for key management examples
-
 import {
   WALLET_DEFAULT_CONTEXT,
   WALLET_DEFAULT_ENCRYPTED_TYPE,

@@ -13,7 +13,8 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
     let edvId;
     if (url.indexOf('/edvs/') !== -1) {
-      this.serverUrl = url.split('/edvs/')[0];
+      const [serverUrl] = url.split('/edvs/');
+      this.serverUrl = serverUrl;
       edvId = url;
     } else {
       this.serverUrl = url;
@@ -203,23 +204,17 @@ class EDVHTTPStorageInterface extends StorageInterface {
       hmac: { id: hmac.id, type: hmac.type },
     };
 
-    try {
-      const { id } = await EdvClient.createEdv({
-        url: `${this.serverUrl}/edvs`,
-        // TODO: BUG: with data-vault-example server it will fail when passing invoc and capability, bug on their on i think
-        // lines commented out for that reason, needs addressing somehow
-        // invocationSigner: invocationSigner || this.invocationSigner, // invocationSigner must be passed if controller is DID
-        // capability: capability || this.capability, // capability must be passed if controller is DID
-        httpsAgent,
-        headers,
-        config,
-      });
-
-      return id;
-    } catch (e) {
-      // TODO: better error handling
-      throw e;
-    }
+    const { id } = await EdvClient.createEdv({
+      url: `${this.serverUrl}/edvs`,
+      // TODO: BUG: with data-vault-example server it will fail when passing invoc and capability, bug on their on i think
+      // lines commented out for that reason, needs addressing somehow
+      disabledinvocationSigner: invocationSigner || this.invocationSigner, // invocationSigner must be passed if controller is DID
+      disabledcapability: capability || this.capability, // capability must be passed if controller is DID
+      httpsAgent,
+      headers,
+      config,
+    });
+    return id;
   }
 }
 
