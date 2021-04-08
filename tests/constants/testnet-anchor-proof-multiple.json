@@ -1,0 +1,41 @@
+[
+  {
+    "filename": "key-agreement-key.json",
+    "proof": [
+      {
+        "Right": "10d6ac3b176a436819b29f29df6e355a0f99341846e8f68099ddf033083e95da"
+      },
+      {
+        "Right": "ce24bdea7099c397533afd5e9056a233cdb82dbbaade765a7ab22cd5cdef1be3"
+      }
+    ],
+    "content_hash": "c8cb706503c6fb1438fa54b6c750bdaaa67815afc85f1be54fe9396756282c86",
+    "root": "df3117f17c36001d96bdc5ebf4d484f176078affc826f3513b598f7ccb2e4897",
+    "hashalg": "blake2b256"
+  },
+  {
+    "filename": "key-base58.json",
+    "proof": [
+      {
+        "Left": "cc1b23282fa6c5feeeef2659c4d021b526aee3bfd0f3d2ea09191da205bc69a7"
+      },
+      {
+        "Right": "ce24bdea7099c397533afd5e9056a233cdb82dbbaade765a7ab22cd5cdef1be3"
+      }
+    ],
+    "content_hash": "2988775166fcb854ef741869833493c965dcfb4702767f7c0db094b4b23c0066",
+    "root": "df3117f17c36001d96bdc5ebf4d484f176078affc826f3513b598f7ccb2e4897",
+    "hashalg": "blake2b256"
+  },
+  {
+    "filename": "key-hardware.json",
+    "proof": [
+      {
+        "Left": "26ba7b74586c4b21bbf98af2802bcd8c6018a3f1d755ed3aa03c259aee0405e7"
+      }
+    ],
+    "content_hash": "f7cc4d90396e327061cce0ce4f6d6ff8b57ee80c8c3ca8adae47e9710e347e55",
+    "root": "df3117f17c36001d96bdc5ebf4d484f176078affc826f3513b598f7ccb2e4897",
+    "hashalg": "blake2b256"
+  }
+]
