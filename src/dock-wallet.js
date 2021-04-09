@@ -197,9 +197,7 @@ class DockWallet {
         if (termSplit[0] === 'content') {
           const contentValue = content[termProperty];
           const equalsValue = equals[term];
-          if (Array.isArray(contentValue) && contentValue.indexOf(equalsValue) > -1) {
-            return true;
-          } else if (content[termProperty] === equals[term]) {
+          if ((Array.isArray(contentValue) && contentValue.indexOf(equalsValue) > -1) || content[termProperty] === equals[term]) {
             return true;
           }
         } else {

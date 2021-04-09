@@ -17,14 +17,14 @@ export function isType(content, type) {
 export async function getCorrelatedMetadata(to, wallet) {
   const result = await wallet.query({
     equals: {
-      'content.type': 'Metadata'
-    }
+      'content.type': 'Metadata',
+    },
   });
-  return result.filter(content => isCorrelated(content, to));
+  return result.filter((content) => isCorrelated(content, to));
 }
 
 export async function getCredentialAnchors(credential, wallet) {
   const { id } = credential;
   const metadata = await getCorrelatedMetadata(id, wallet);
-  return metadata.filter(content => isType(content, WALLET_TYPE_ANCHOR));
+  return metadata.filter((content) => isType(content, WALLET_TYPE_ANCHOR));
 }
