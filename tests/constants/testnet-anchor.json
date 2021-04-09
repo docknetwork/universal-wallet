@@ -4,9 +4,9 @@
   ],
   "id": "anchor:docktestnet:f2eab415bcb2d66759ad14e1b1f677fd35aca6502b9f23fd7d2f546becf909a2",
   "type": [
-    "DockTestnetAnchor"
+    "CredentialAnchor"
   ],
-  "status": "UNLOCKED",
+  "credential": "http://example.gov/credentials/3733",
   "anchors": [
     {
       "filename": "wallet-content-item.json",

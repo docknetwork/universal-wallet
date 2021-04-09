@@ -5,6 +5,7 @@ import {
   WALLET_UNLOCKED,
   WALLET_SIGNED_CREDENTIAL,
   WALLET_UNSIGNED_CREDENTIAL,
+  WALLET_TESTNET_ANCHOR,
   WALLET_PASSWORD,
 } from './constants';
 
@@ -67,6 +68,14 @@ describe('Wallet - Basic functionality', () => {
   test('Can remove a credential', () => {
     wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
     expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
+  });
+
+  test('Can add and remove an anchor', () => {
+    wallet.add(WALLET_TESTNET_ANCHOR);
+    expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(true);
+
+    wallet.remove(WALLET_TESTNET_ANCHOR.id);
+    expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(false);
   });
 
   test('Can query for contents', async () => {
