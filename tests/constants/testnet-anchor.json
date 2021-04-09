@@ -3,17 +3,16 @@
     "https://w3id.org/wallet/v1"
   ],
   "id": "anchor:docktestnet:f2eab415bcb2d66759ad14e1b1f677fd35aca6502b9f23fd7d2f546becf909a2",
-  "type": [
-    "CredentialAnchor"
-  ],
-  "credential": "http://example.gov/credentials/3733",
-  "anchors": [
-    {
-      "filename": "wallet-content-item.json",
-      "proof": [],
-      "content_hash": "1b0026d6a8eb8d694ffab80a3aaf35dd32d876838ac2989cd60626567e8377e8",
-      "root": "79e4714e9687fe012e5e15eff17b411187c075e874c18a0c3792279fa8dd5d4d",
-      "hashalg": "blake2b256"
-    }
-  ]
+  "type": ["Metadata", "DockAnchor"],
+  "name": "Bachelor of Science and Arts Anchor",
+  "image": "https://via.placeholder.com/150",
+  "description" : "This is a deployed dock testnet anchor for a signed credential",
+  "tags": ["credential anchor"],
+  "correlation": ["http://example.gov/credentials/3733"],
+  "contents": [{
+    "proof": [],
+    "contentHash": "1b0026d6a8eb8d694ffab80a3aaf35dd32d876838ac2989cd60626567e8377e8",
+    "root": "79e4714e9687fe012e5e15eff17b411187c075e874c18a0c3792279fa8dd5d4d",
+    "hashalg": "blake2b256"
+  }]
 }
