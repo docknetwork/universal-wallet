@@ -25,6 +25,7 @@ class StorageWallet extends DockWallet {
   }
 
   async query(search) {
+    // tODO: query the in memory contents first and pass flag to not use it, if empty run storage search
     // Query storage interface and map into wallet contents
     const { documents } = await this.storageInterface.find(search);
     return documents.map((document) => document.content);

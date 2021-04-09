@@ -1,4 +1,5 @@
 import DockWallet from '../src/index';
+import { getCredentialAnchors } from '../src/methods';
 
 import {
   WALLET_LOCKED,
@@ -65,17 +66,23 @@ describe('Wallet - Basic functionality', () => {
     expect(walletJSON).toMatchObject(unlockedWalletObject);
   });
 
-  test('Can remove a credential', () => {
-    wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
-    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
-  });
-
-  test('Can add and remove an anchor', () => {
+  test('Can add and remove an anchor', async () => {
     wallet.add(WALLET_TESTNET_ANCHOR);
     expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(true);
 
+    // ensure that the anchor is correlated to the signed credential
+    const credentialAnchors = await getCredentialAnchors(WALLET_SIGNED_CREDENTIAL, wallet);
+    const credentialAnchor = credentialAnchors[0];
+    expect(credentialAnchor).toBeDefined();
+    expect(credentialAnchor.id).toEqual(WALLET_TESTNET_ANCHOR.id);
+
     wallet.remove(WALLET_TESTNET_ANCHOR.id);
     expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(false);
+  });
+
+  test('Can remove a credential', () => {
+    wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
   });
 
   test('Can query for contents', async () => {

@@ -24,6 +24,11 @@ class EDVWallet extends StorageWallet {
       unique: true,
     });
 
+    // Ensure documents have type property and are indexed by it
+    storageInterface.client.ensureIndex({
+      attribute: 'content.type',
+    });
+
     super(id, storageInterface);
   }
 }

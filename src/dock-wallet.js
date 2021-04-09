@@ -8,7 +8,7 @@ import {
   exportContentsAsCredential,
   lockWalletContents,
   unlockWalletContents,
-} from './methods/contents';
+} from './methods/contents-crypto';
 
 import { passwordToKeypair } from './methods/password';
 import {
@@ -184,10 +184,10 @@ class DockWallet {
    * @param {object} search - Search query object
    * @return {array<any>} List of contents results
    */
-  query(search) {
+  async query(search) {
     // Really basic "search" of contents
     // typically a wallet class would extend this method
-    const { equals = {} } = search;
+    const { equals = {} } = search; // TODO: support "has" query (A string with an attribute name to match or an array of such strings.)
     return this.contents.filter((content) => {
       const terms = Object.keys(equals);
       for (let i = 0; i < terms.length; i++) {
@@ -195,7 +195,11 @@ class DockWallet {
         const termSplit = term.split('.');
         const termProperty = termSplit[1];
         if (termSplit[0] === 'content') {
-          if (content[termProperty] === equals[term]) {
+          const contentValue = content[termProperty];
+          const equalsValue = equals[term];
+          if (Array.isArray(contentValue) && contentValue.indexOf(equalsValue) > -1) {
+            return true;
+          } else if (content[termProperty] === equals[term]) {
             return true;
           }
         } else {
