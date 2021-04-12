@@ -42,8 +42,6 @@ function polkadotToKeydoc(aliceKeys, controller = undefined) {
       'ecdsa': 'EcdsaSecp256k1VerificationKey2019',
     };
 
-    const controller = undefined;
-
     const kpType = polkadotTypesToKeys[getKeyPairType(aliceKeys)];
     const keyDoc = getKeyDoc(controller, aliceKeys, kpType);
     const formattedkeyDoc = {
@@ -73,15 +71,20 @@ describe('Wallet - Key storage and usage', () => {
     await dock.initKeyring();
   });
 
-  test('Can use Polkadot Keyring keys', () => {
-    const { keyring } = dock;
-    const aliceKeys = keyring.addFromUri('//Alice', {}, 'ed25519');
+  test('Can convert Polkadot ed25519 keyring to crypto class', () => {
+    const aliceKeys = dock.keyring.addFromUri('//Alice', {}, 'ed25519');
     const keyDoc = polkadotToKeydoc(aliceKeys);
     const keypairInstance = getKeypairFromDoc(keyDoc);
+    expect(keypairInstance.type).toEqual('Ed25519VerificationKey2018');
+  });
 
+  test('Can convert Polkadot sr25519 keyring to crypto class', () => {
+    const aliceKeys = dock.keyring.addFromUri('//Alice', {}, 'sr25519');
+    const keyDoc = polkadotToKeydoc(aliceKeys);
     console.log('keyDoc', keyDoc)
+    const keypairInstance = getKeypairFromDoc(keyDoc);
     console.log('keypairInstance', keypairInstance)
-    // TODO: this
+    expect(keypairInstance.type).toEqual('Ed25519VerificationKey2018');
   });
 
   test('Can add a local base58 key', () => {
