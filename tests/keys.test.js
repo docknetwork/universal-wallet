@@ -119,8 +119,23 @@ describe('Wallet - Key generation', () => {
     derivedKey = await passwordToKey('testpass');
   });
 
+  test('Can generate Sr25519VerificationKey2020', async () => {
+    const keypair = await getKeypairFromDerivedKey(derivedKey, 'Sr25519VerificationKey2020');
+    expect(keypair.type).toEqual('Sr25519VerificationKey2020');
+  });
+
   test('Can generate Ed25519VerificationKey2018', async () => {
     const keypair = await getKeypairFromDerivedKey(derivedKey, 'Ed25519VerificationKey2018');
     expect(keypair.type).toEqual('Ed25519VerificationKey2018');
+  });
+
+  test('Can generate X25519KeyAgreementKey2019', async () => {
+    const keypair = await getKeypairFromDerivedKey(derivedKey, 'X25519KeyAgreementKey2019');
+    expect(keypair.type).toEqual('X25519KeyAgreementKey2019');
+  });
+
+  test('Can generate X25519KeyAgreementKey2020', async () => {
+    const keypair = await getKeypairFromDerivedKey(derivedKey, 'X25519KeyAgreementKey2020');
+    expect(keypair.type).toEqual('X25519KeyAgreementKey2020');
   });
 });
