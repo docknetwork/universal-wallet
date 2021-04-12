@@ -3,6 +3,11 @@ import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-k
 import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 
+// NOTE:
+// digitalbazaar provide a library for EcdsaSecp256k1VerificationKey2019 but at this point its not upto
+// date to be useable with other libraries. so, for now we will wrap it in a polkadot keypair
+// no libraries are provided for Sr25519VerificationKey2020
+
 const keyGenerators = {
   Ed25519VerificationKey2018: async (seed) => Ed25519VerificationKey2018.generate({
     seed,
@@ -25,6 +30,7 @@ const keyGenerators = {
 };
 
 const keyConstructors = {
+  // Sr25519VerificationKey2020: (keypairOptions) => new Sr25519VerificationKey2020(keypairOptions),
   Ed25519VerificationKey2018: (keypairOptions) => new Ed25519VerificationKey2018(keypairOptions),
   Ed25519VerificationKey2020: (keypairOptions) => new Ed25519VerificationKey2020(keypairOptions),
   X25519KeyAgreementKey2019: (keypairOptions) => new X25519KeyAgreementKey2019(keypairOptions),
