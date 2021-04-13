@@ -71,7 +71,7 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
     if(seed) {
       keyObject = schnorrkelKeypairFromSeed(seed);
     } else {
-      const randomSeed = await randomBytesAsync(32);
+      const randomSeed = randomBytes(32);
       keyObject = schnorrkelKeypairFromSeed(randomSeed);
     }
     return new Sr25519VerificationKey2020({

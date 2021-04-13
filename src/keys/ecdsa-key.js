@@ -1,7 +1,8 @@
 import * as base58btc from 'base58-universal';
 import { LDKeyPair } from 'crypto-ld';
-import { schnorrkelVerify, schnorrkelSign, schnorrkelKeypairFromSeed } from '@polkadot/util-crypto/schnorrkel';
-import { randomBytes } from 'crypto';
+import crypto, { randomBytes } from 'crypto';
+const ec = new (require('elliptic')).ec('secp256k1');
+import util from './util';
 
 const SUITE_ID = 'EcdsaSecp256k1VerificationKey2019';
 
@@ -69,17 +70,24 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
    *   public/private key pair.
    */
   static async generate({seed, ...keyPairOptions} = {}) {
-    let keyObject;
+    let key;
     if(seed) {
-      keyObject = schnorrkelKeypairFromSeed(seed);
+      key = ec.keyFromPrivate(seed);
     } else {
-      const randomSeed = await randomBytesAsync(32);
-      keyObject = schnorrkelKeypairFromSeed(randomSeed);
+      const randomSeed = randomBytes(32);
+      key = ec.keyFromPrivate(randomSeed);
     }
+
+    const pubPoint = key.getPublic();
+    // encode public X and Y in compressed form
+    const publicKeyBase58 = base58btc.encode(new Uint8Array(
+      pubPoint.encodeCompressed()));
+    const privateKeyBase58 = base58btc.encode(new Uint8Array(
+      key.getPrivate().toArray()));
+
     return new EcdsaSecp256k1VerificationKey2019({
-      // prefix with `z` to indicate multi-base base58btc encoding
-      publicKeyBase58: base58btc.encode(keyObject.publicKey),
-      privateKeyBase58: base58btc.encode(keyObject.secretKey),
+      publicKeyBase58,
+      privateKeyBase58,
       ...keyPairOptions
     });
   }
@@ -214,7 +222,7 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
       fingerprintBuffer.slice(2));
 
     // validate the first two multicodec bytes 0xdf01
-    const valid = fingerprintBuffer[0] === 0xdf &&
+    const valid = fingerprintBuffer[0] === 0xe7 &&
       fingerprintBuffer[1] === 0x01 &&
       buffersEqual;
     if(!valid) {
@@ -226,32 +234,22 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
     return {valid};
   }
 
+  /**
+   * Returns a signer object for use with jsonld-signatures.
+   *
+   * @returns {{sign: Function}} A signer for the json-ld block.
+   */
   signer() {
-    const publicKeyBuffer = this._publicKeyBuffer;
-    const privateKeyBuffer = this._privateKeyBuffer;
-    if(!privateKeyBuffer) {
-      throw new Error('No private key to sign with.');
-    }
-
-    return {
-      async sign({data}) {
-        return schnorrkelSign(data, {
-          publicKey: publicKeyBuffer,
-          secretKey: privateKeyBuffer,
-        });
-      },
-      id: this.id
-    };
+    return secp256SignerFactory(this);
   }
 
+  /**
+   * Returns a verifier object for use with jsonld-signatures.
+   *
+   * @returns {{verify: Function}} Used to verify jsonld-signatures.
+   */
   verifier() {
-    const publicKeyBuffer = this._publicKeyBuffer;
-    return {
-      async verify({data, signature}) {
-        return schnorrkelVerify(data, signature, publicKeyBuffer);
-      },
-      id: this.id
-    };
+    return secp256VerifierFactory(this);
   }
 }
 // Used by CryptoLD harness for dispatching.
@@ -270,4 +268,74 @@ function _isEqualBuffer(buf1, buf2) {
     }
   }
   return true;
+}
+
+/**
+ * @ignore
+ * Returns an object with an async sign function.
+ * The sign function is bound to the KeyPair
+ * and then returned by the KeyPair's signer method.
+ * @param {Secp256k1KeyPair} key - An Secp256k1KeyPair.
+ *
+ * @returns {{sign: Function}} An object with an async function sign
+ * using the private key passed in.
+ */
+function secp256SignerFactory(key) {
+  if(!key.privateKeyBase58) {
+    return {
+      async sign() {
+        throw new Error('No private key to sign with.');
+      }
+    };
+  }
+
+  const privateKey = util.base58Decode({
+    decode: base58btc.decode,
+    keyMaterial: key.privateKeyBase58,
+    type: 'private'
+  });
+  const k = ec.keyPair({
+    priv: privateKey.toString('hex'),
+    privEnc: 'hex'
+  });
+  return {
+    async sign({data}) {
+      const md = crypto.createHash('sha256').update(data).digest();
+      return new Uint8Array(k.sign(md).toDER());
+    }
+  };
+}
+
+/**
+ * @ignore
+ * Returns an object with an async verify function.
+ * The verify function is bound to the KeyPair
+ * and then returned by the KeyPair's verifier method.
+ * @param {Secp256k1KeyPair} key - An Secp256k1KeyPair.
+ *
+ * @returns {{verify: Function}} An async verifier specific
+ * to the key passed in.
+ */
+function secp256VerifierFactory(key) {
+  const publicKey = util.base58Decode({
+    decode: base58btc.decode,
+    keyMaterial: key.publicKeyBase58,
+    type: 'public'
+  });
+  const k = ec.keyPair({
+    pub: publicKey.toString('hex'),
+    pubEnc: 'hex'
+  });
+  return {
+    async verify({data, signature}) {
+      const md = crypto.createHash('sha256').update(data).digest();
+      let verified = false;
+      try {
+        verified = k.verify(md, signature);
+      } catch(e) {
+        console.error('An error occurred when verifying signature: ', e);
+      }
+      return verified;
+    }
+  };
 }
