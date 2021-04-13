@@ -2,7 +2,7 @@ import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-k
 import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
 import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
-import { Sr25519VerificationKey2020 } from '../keys/sr25519';
+import { Sr25519VerificationKey2020 } from '../keys/sr25519-key';
 
 // NOTE:
 // digitalbazaar provide a library for EcdsaSecp256k1VerificationKey2019 but at this point its not upto
