@@ -2,7 +2,7 @@ import DockWallet from '../src/index';
 import dock from '@docknetwork/sdk';
 import { base64Decode, decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import * as base58btc from 'base58-universal';
-import { u8aToHex } from '@polkadot/util';
+import { u8aToHex, hexToU8a } from '@polkadot/util';
 
 import {
   decodePair,
@@ -31,15 +31,16 @@ import {
   KEY_JWK,
 } from './constants/keys';
 
+// Predefined key seed
 const keySeedHex = '0x7486f32178669ca0febb50dc59787a84193fd00677553370ddd2d383fdd27f3f';
 
-function verifyCryptoKeypair(keyPair) {
-console.log('keyPair', keyPair)
-  // TOOD: perform some basic crypto operations on this keypair to verify it works
+// These account addresses were generated with polkadot frontend using above seed
+const expectedAddresses = {
+  sr25519: '5FqABwdXytztjT25doNUD3C4uziWqeBs2nEhueD9oeudGdF1',
+  ed25519: '5DJJt5T7es4FUF1RWZTNE7L4R68RT5RweJuwtbXiQNSGAH56',
 }
 
-// TODO: have a helper method to convert polkadotjs keyring objcet into a json crypto document, then that into a keypair instance
-// add test for it
+// TODO: move thist
 function polkadotToKeydoc(polkadotKeys, controller = undefined) {
     const keyPassphrase = 'test';
     const keyjson = polkadotKeys.toJson(keyPassphrase);
@@ -79,6 +80,7 @@ function verifyAddress(keyDoc, polkadotKeys) {
   expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
   const address = encodeAddress(publicKey);
   expect(address).toEqual(polkadotKeys.address);
+  expect(address).toEqual(expectedAddresses[polkadotKeys.type]);
 }
 
 describe('Wallet - Key storage and usage', () => {
@@ -94,7 +96,6 @@ describe('Wallet - Key storage and usage', () => {
     verifyAddress(keyDoc, polkadotKeys);
     const keypairInstance = getKeypairFromDoc(keyDoc);
     expect(keypairInstance.type).toEqual('Ed25519VerificationKey2018');
-    verifyCryptoKeypair(keypairInstance);
   });
 
   test('Can convert Polkadot sr25519 keyring to crypto class', () => {
@@ -103,7 +104,6 @@ describe('Wallet - Key storage and usage', () => {
     verifyAddress(keyDoc, polkadotKeys);
     const keypairInstance = getKeypairFromDoc(keyDoc);
     expect(keypairInstance.type).toEqual('Sr25519VerificationKey2020');
-    verifyCryptoKeypair(keypairInstance);
   });
 
   test('Can add a local base58 key', () => {
@@ -112,7 +112,7 @@ describe('Wallet - Key storage and usage', () => {
     // TODO: retrieve key from wallet by id as crpyto keypair class with helper method and ensure its valid
   });
 
-  // TODOS:
+  // // TODOS:
   // test('Can add a JSON web key', () => {
   //   // TODO: this
   // });
@@ -150,5 +150,19 @@ describe('Wallet - Key generation', () => {
   test('Can generate X25519KeyAgreementKey2020', async () => {
     const keypair = await getKeypairFromDerivedKey(derivedKey, 'X25519KeyAgreementKey2020');
     expect(keypair.type).toEqual('X25519KeyAgreementKey2020');
+  });
+
+  test('Can generate ed25519 key that has same public key as expected in Polkadot', async () => {
+    const generatedKeypair = await getKeypairFromDerivedKey(hexToU8a(keySeedHex), 'Ed25519VerificationKey2018');
+    const polkadotKeys = dock.keyring.addFromUri(keySeedHex, {}, 'ed25519');
+    const publicKey = u8aToHex(base58btc.decode(generatedKeypair.publicKeyBase58));
+    expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
+  });
+
+  test('Can generate sr25519 key that has same public key as expected in Polkadot', async () => {
+    const generatedKeypair = await getKeypairFromDerivedKey(hexToU8a(keySeedHex), 'Sr25519VerificationKey2020');
+    const polkadotKeys = dock.keyring.addFromUri(keySeedHex, {}, 'sr25519');
+    const publicKey = u8aToHex(base58btc.decode(generatedKeypair.publicKeyMultibase.substr(1)));
+    expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
   });
 });
