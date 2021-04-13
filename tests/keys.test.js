@@ -175,10 +175,42 @@ describe('Wallet - Key storage and usage', () => {
   // });
 });
 
+async function signAndVerifyTest(keypair, sourceOfTruthKeypair) {
+  console.log('signAndVerifyTest', keypair);
+
+  const testMessage = 'hello world';
+
+  const kp1Signer = keypair.signer();
+    console.log('kp1Signer', kp1Signer)
+
+  const kp1SignedData = u8aToHex(await kp1Signer.sign({
+    data: testMessage,
+  }));
+
+  console.log('kp1SignedData', kp1SignedData)
+
+  const kpTruthSignedData = u8aToHex(await sourceOfTruthKeypair.sign(testMessage));
+
+  console.log('kpTruthSignedData', kpTruthSignedData)
+
+  expect(kp1SignedData).toEqual(kpTruthSignedData);
+
+
+  // TODO: verify signatures
+  const kp1Verifier = keypair.verifier();
+  console.log('kp1Verifier', kp1Verifier)
+}
+
 describe('Wallet - Key generation', () => {
   let derivedKey;
   beforeAll(async () => {
     derivedKey = await passwordToKey('testpass');
+    await dock.initKeyring();
+  });
+
+  test('Can generate EcdsaSecp256k1VerificationKey2019', async () => {
+    const keypair = await getKeypairFromDerivedKey(derivedKey, 'EcdsaSecp256k1VerificationKey2019');
+    expect(keypair.type).toEqual('EcdsaSecp256k1VerificationKey2019');
   });
 
   test('Can generate Sr25519VerificationKey2020', async () => {
@@ -206,6 +238,7 @@ describe('Wallet - Key generation', () => {
     const polkadotKeys = dock.keyring.addFromUri(keySeedHex, {}, 'ed25519');
     const publicKey = u8aToHex(base58btc.decode(generatedKeypair.publicKeyBase58));
     expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
+    await signAndVerifyTest(generatedKeypair, polkadotKeys);
   });
 
   test('Can generate sr25519 key that has same public key as expected in Polkadot', async () => {
@@ -213,5 +246,14 @@ describe('Wallet - Key generation', () => {
     const polkadotKeys = dock.keyring.addFromUri(keySeedHex, {}, 'sr25519');
     const publicKey = u8aToHex(base58btc.decode(generatedKeypair.publicKeyMultibase.substr(1)));
     expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
+    await signAndVerifyTest(generatedKeypair, polkadotKeys);
+  });
+
+  test('Can generate ecdsa key that has same public key as expected in Polkadot', async () => {
+    const generatedKeypair = await getKeypairFromDerivedKey(hexToU8a(keySeedHex), 'EcdsaSecp256k1VerificationKey2019');
+    const polkadotKeys = dock.keyring.addFromUri(keySeedHex, {}, 'ecdsa');
+    const publicKey = u8aToHex(base58btc.decode(generatedKeypair.publicKeyBase58));
+    expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
+    await signAndVerifyTest(generatedKeypair, polkadotKeys);
   });
 });
