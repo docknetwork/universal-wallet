@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: keys/sr25519-key.js</title>
+    <title>JSDoc: Source: keys/ecdsa-key.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: keys/sr25519-key.js</h1>
+    <h1 class="page-title">Source: keys/ecdsa-key.js</h1>
 
     
 
@@ -31,22 +31,21 @@ import { LDKeyPair } from 'crypto-ld';
 import { schnorrkelVerify, schnorrkelSign, schnorrkelKeypairFromSeed } from '@polkadot/util-crypto/schnorrkel';
 import { randomBytes } from 'crypto';
 
-const SUITE_ID = 'Sr25519VerificationKey2020';
+const SUITE_ID = 'EcdsaSecp256k1VerificationKey2019';
 
-export class Sr25519VerificationKey2020 extends LDKeyPair {
+export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
   /**
-   * An implementation of the Sr25519VerificationKey2020 spec, for use with
+   * An implementation of the EcdsaSecp256k1VerificationKey2019 spec, for use with
    * Linked Data Proofs.
    *
-   * @see https://github.com/docknetwork/wallet
    * @see https://github.com/digitalbazaar/jsonld-signatures
    *
    * @param {object} options - Options hashmap.
    * @param {string} options.controller - Controller DID or document url.
    * @param {string} [options.id] - The key ID. If not provided, will be
    *   composed of controller and key fingerprint as hash fragment.
-   * @param {string} options.publicKeyMultibase - Multibase encoded public key.
-   * @param {string} [options.privateKeyMultibase] - Multibase private key.
+   * @param {string} options.publicKeyBase58 - The Base58 encoded Public Key.
+   * @param {string} [options.privateKeyBase58] - The Base58 Private Key.
    * @param {string} [options.revoked] - Timestamp of when the key has been
    *   revoked, in RFC3339 format. If not present, the key itself is considered
    *   not revoked. Note that this mechanism is slightly different than DID
@@ -56,11 +55,14 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
   constructor(options = {}) {
     super(options);
     this.type = SUITE_ID;
-    this.publicKeyMultibase = options.publicKeyMultibase;
-    if(!this.publicKeyMultibase) {
-      throw new TypeError('The "publicKeyMultibase" property is required.');
+    this.id = options.id;
+    this.controller = options.controller;
+    this.privateKeyBase58 = options.privateKeyBase58;
+    this.publicKeyBase58 = options.publicKeyBase58;
+    if(!this.publicKeyBase58) {
+      throw new TypeError('The "publicKeyBase58" property is required.');
     }
-    this.privateKeyMultibase = options.privateKeyMultibase;
+
     if(this.controller &amp;&amp; !this.id) {
       this.id = `${this.controller}#${this.fingerprint()}`;
     }
@@ -71,17 +73,17 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    *
    * @param {object} options - Key pair options (see constructor).
    * @example
-   * > const keyPair = await Sr25519VerificationKey2020.from({
+   * > const keyPair = await EcdsaSecp256k1VerificationKey2019.from({
    * controller: 'did:ex:1234',
-   * type: 'Sr25519VerificationKey2020',
-   * publicKeyMultibase,
-   * privateKeyMultibase
+   * type: 'EcdsaSecp256k1VerificationKey2019',
+   * publicKeyBase58,
+   * privateKeyBase58,
    * });
    *
-   * @returns {Promise&lt;Sr25519VerificationKey2020>} An Sr25519 Key Pair.
+   * @returns {Promise&lt;EcdsaSecp256k1VerificationKey2019>} An Sr25519 Key Pair.
    */
   static async from(options) {
-    return new Sr25519VerificationKey2020(options);
+    return new EcdsaSecp256k1VerificationKey2019(options);
   }
 
   /**
@@ -91,7 +93,7 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    * @param {Uint8Array} [options.seed] - A 32-byte array seed for a
    *   deterministic key.
    *
-   * @returns {Promise&lt;Sr25519VerificationKey2020>} Resolves with generated
+   * @returns {Promise&lt;EcdsaSecp256k1VerificationKey2019>} Resolves with generated
    *   public/private key pair.
    */
   static async generate({seed, ...keyPairOptions} = {}) {
@@ -102,21 +104,21 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
       const randomSeed = await randomBytesAsync(32);
       keyObject = schnorrkelKeypairFromSeed(randomSeed);
     }
-    return new Sr25519VerificationKey2020({
+    return new EcdsaSecp256k1VerificationKey2019({
       // prefix with `z` to indicate multi-base base58btc encoding
-      publicKeyMultibase: `z${base58btc.encode(keyObject.publicKey)}`,
-      privateKeyMultibase: `z${base58btc.encode(keyObject.secretKey)}`,
+      publicKeyBase58: base58btc.encode(keyObject.publicKey),
+      privateKeyBase58: base58btc.encode(keyObject.secretKey),
       ...keyPairOptions
     });
   }
 
   /**
-   * Creates an instance of Sr25519VerificationKey2020 from a key fingerprint.
+   * Creates an instance of EcdsaSecp256k1VerificationKey2019 from a key fingerprint.
    *
    * @param {object} options - Options hashmap.
    * @param {string} options.fingerprint - Multibase encoded key fingerprint.
    *
-   * @returns {Sr25519VerificationKey2020} Returns key pair instance (with
+   * @returns {EcdsaSecp256k1VerificationKey2019} Returns key pair instance (with
    *   public key only).
    */
   static fromFingerprint({fingerprint} = {}) {
@@ -128,10 +130,10 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
     // skip leading `z` that indicates base58 encoding
     const buffer = base58btc.decode(fingerprint.substr(1));
 
-    // buffer is: 0xdf 0x01 &lt;public key bytes>
-    if(buffer[0] === 0xdf &amp;&amp; buffer[1] === 0x01) {
-      return new Sr25519VerificationKey2020({
-        publicKeyMultibase: `z${base58btc.encode(buffer.slice(2))}`
+    // buffer is: 0xe7 0x01 &lt;public key bytes>
+    if(buffer[0] === 0xe7 &amp;&amp; buffer[1] === 0x01) {
+      return new EcdsaSecp256k1VerificationKey2019({
+        publicKeyBase58: base58btc.encode(buffer.slice(2)),
       });
     }
 
@@ -139,13 +141,11 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
   }
 
   get _publicKeyBuffer() {
-    return this.publicKeyMultibase &amp;&amp;
-      base58btc.decode(this.publicKeyMultibase.substr(1));
+    return base58btc.decode(this.publicKeyBase58);
   }
 
   get _privateKeyBuffer() {
-    return this.privateKeyMultibase &amp;&amp;
-      base58btc.decode(this.privateKeyMultibase.substr(1));
+    return base58btc.decode(this.privateKeyBase58);
   }
 
   /**
@@ -157,11 +157,11 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    * @returns {string} The fingerprint.
    */
   fingerprint() {
-    // Sr25519 cryptonyms are multicodec encoded values, however they dont exist in this spec, perhaps we can add it:
-    // https://github.com/multiformats/multicodec/blob/12933db899bf222b91685e94139eb7ab632b8c82/table.csv - 0xdf01
     const pubkeyBytes = this._publicKeyBuffer;
     const buffer = new Uint8Array(2 + pubkeyBytes.length);
-    buffer[0] = 0xdf;
+    // See https://github.com/multiformats/multicodec/blob/master/table.csv
+    // 0xe7 is Secp256k1 public key
+    buffer[0] = 0xe7; //
     buffer[1] = 0x01;
     buffer.set(pubkeyBytes, 2);
     // prefix with `z` to indicate multi-base base58btc encoding
@@ -190,16 +190,16 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
       type: this.type
     };
     if(includeContext) {
-      exportedKey['@context'] = Sr25519VerificationKey2020.SUITE_CONTEXT;
+      exportedKey['@context'] = EcdsaSecp256k1VerificationKey2019.SUITE_CONTEXT;
     }
     if(this.controller) {
       exportedKey.controller = this.controller;
     }
     if(publicKey) {
-      exportedKey.publicKeyMultibase = this.publicKeyMultibase;
+      exportedKey.publicKeyBase58 = this.publicKeyBase58;
     }
     if(privateKey) {
-      exportedKey.privateKeyMultibase = this.privateKeyMultibase;
+      exportedKey.privateKeyBase58 = this.privateKeyBase58;
     }
     if(this.revoked) {
       exportedKey.revoked = this.revoked;
@@ -283,9 +283,9 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
   }
 }
 // Used by CryptoLD harness for dispatching.
-Sr25519VerificationKey2020.suite = SUITE_ID;
+EcdsaSecp256k1VerificationKey2019.suite = SUITE_ID;
 // Used by CryptoLD harness's fromKeyId() method.
-Sr25519VerificationKey2020.SUITE_CONTEXT =
+EcdsaSecp256k1VerificationKey2019.SUITE_CONTEXT =
   'https://w3id.org/security/suites/sr25519-2020/v1'; // TODO: proper context that can be resolved
 
 function _isEqualBuffer(buf1, buf2) {
