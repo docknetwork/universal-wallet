@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: EDVHTTPStorageInterface</title>
+    <title>JSDoc: Global</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: EDVHTTPStorageInterface</h1>
+    <h1 class="page-title">Global</h1>
 
     
 
@@ -28,9 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>EDVHTTPStorageInterface<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">EDV HTTP client storage implementation</div>
+        <h2></h2>
         
     
 </header>
@@ -40,28 +38,7 @@
     
         
 
-    
-    <h2>Constructor</h2>
-    
-
-    
-    <h4 class="name" id="EDVHTTPStorageInterface"><span class="type-signature"></span>new EDVHTTPStorageInterface<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
 
 
 <dl class="details">
@@ -91,11 +68,6 @@
     
 
     
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage_edv-http-storage.js.html">storage/edv-http-storage.js</a>, <a href="storage_edv-http-storage.js.html#line5">line 5</a>
-    </li></ul></dd>
-    
 
     
 
@@ -105,24 +77,7 @@
 </dl>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
     
     </div>
 
@@ -149,7 +104,7 @@
     
 
     
-    <h4 class="name" id="createEdv"><span class="type-signature">(async) </span>createEdv<span class="signature">(options)</span><span class="type-signature"> &rarr; {Promise.&lt;string>}</span></h4>
+    <h4 class="name" id="base58Decode"><span class="type-signature"></span>base58Decode<span class="signature">(options)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -157,8 +112,8 @@
 
 
 <div class="description">
-    Creates a new EDV using the given configuration and returns its ID
-TODO: define other params
+    Wraps Base58 decoding operations in
+order to provide consistent error messages.
 </div>
 
 
@@ -200,7 +155,7 @@ TODO: define other params
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -210,7 +165,7 @@ TODO: define other params
 
             
 
-            <td class="description last">The options to use.
+            <td class="description last">The decoder options.
                 <h6>Properties</h6>
                 
 
@@ -224,8 +179,6 @@ TODO: define other params
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
         
 
@@ -238,68 +191,72 @@ TODO: define other params
 
         <tr>
             
-                <td class="name"><code>httpsAgent</code></td>
+                <td class="name"><code>decode</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">httpsAgent</span>
+<span class="param-type">function</span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last">An optional
-  node.js `https.Agent` instance to use when making requests.</td>
+            <td class="description last">The decode function to use.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>headers</code></td>
+                <td class="name"><code>keyMaterial</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">string</span>
 
 
             
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
 
-                
+            
 
+            <td class="description last">The Base58 encoded
+key material to decode.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
                 
-                </td>
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
             
 
             
 
-            <td class="description last">An optional
-  headers object to use when making requests.</td>
+            <td class="description last">A description of the
+key material that will be included
+in an error message (e.g. 'public', 'private').</td>
         </tr>
 
     
@@ -347,7 +304,7 @@ TODO: define other params
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage_edv-http-storage.js.html">storage/edv-http-storage.js</a>, <a href="storage_edv-http-storage.js.html#line198">line 198</a>
+        <a href="keys_util.js.html">keys/util.js</a>, <a href="keys_util.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -376,7 +333,8 @@ TODO: define other params
 
         
 <div class="param-desc">
-    - Resolves to the ID for the created EDV.
+    - The decoded bytes. The data structure for the bytes is
+  determined by the provided decode function.
 </div>
 
 
@@ -387,7 +345,7 @@ TODO: define other params
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;string></span>
+<span class="param-type">Object</span>
 
 
     </dd>
