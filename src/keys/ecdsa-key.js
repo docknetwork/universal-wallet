@@ -1,6 +1,7 @@
 import * as base58btc from 'base58-universal';
 import { LDKeyPair } from 'crypto-ld';
 import crypto, { randomBytes } from 'crypto';
+import { u8aToHex, hexToU8a, u8aToU8a, stringToU8a } from '@polkadot/util';
 const ec = new (require('elliptic')).ec('secp256k1');
 import util from './util';
 
@@ -289,13 +290,9 @@ function secp256SignerFactory(key) {
     };
   }
 
-  const privateKey = util.base58Decode({
-    decode: base58btc.decode,
-    keyMaterial: key.privateKeyBase58,
-    type: 'private'
-  });
+  const privateKey = base58btc.decode(key.privateKeyBase58);
   const k = ec.keyPair({
-    priv: privateKey.toString('hex'),
+    priv: u8aToHex(privateKey),
     privEnc: 'hex'
   });
   return {
@@ -317,13 +314,10 @@ function secp256SignerFactory(key) {
  * to the key passed in.
  */
 function secp256VerifierFactory(key) {
-  const publicKey = util.base58Decode({
-    decode: base58btc.decode,
-    keyMaterial: key.publicKeyBase58,
-    type: 'public'
-  });
+  const publicKey = base58btc.decode(key.publicKeyBase58);
+  // TODO: fix error in ec, unknown point format
   const k = ec.keyPair({
-    pub: publicKey.toString('hex'),
+    pub: u8aToHex(publicKey),
     pubEnc: 'hex'
   });
   return {
