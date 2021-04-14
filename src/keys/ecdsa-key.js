@@ -3,7 +3,6 @@ import { LDKeyPair } from 'crypto-ld';
 import crypto, { randomBytes } from 'crypto';
 import { u8aToHex, hexToU8a, u8aToU8a, stringToU8a } from '@polkadot/util';
 const ec = new (require('elliptic')).ec('secp256k1');
-import util from './util';
 
 const SUITE_ID = 'EcdsaSecp256k1VerificationKey2019';
 
