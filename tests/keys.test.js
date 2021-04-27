@@ -28,6 +28,10 @@ import {
 } from '../src/methods/password';
 
 import {
+  polkadotToKeydoc,
+} from '../src/polkadot-utils';
+
+import {
   KEY_HARDWARE,
   KEY_REMOTE,
   KEY_LOCAL,
@@ -50,58 +54,6 @@ const polkadotTypesToKeys = {
   ecdsa: 'EcdsaSecp256k1VerificationKey2019',
 };
 
-const TYPE_FROM_SEED = {
-  ecdsa: secp256k1FromSeed,
-  ed25519: naclFromSeed,
-  ethereum: secp256k1FromSeed,
-  sr25519: schnorrkelFromSeed
-};
-
-// TODO: move thist
-function polkadotToKeydoc(polkadotKeys, controller = undefined, keyPassphrase = 'test') {
-    const keyjson = polkadotKeys.toJson(keyPassphrase); // TODO: update method to import from json out of band
-    const polkadotType = polkadotKeys.type || getKeyPairType(polkadotKeys);
-
-    // NOTE: polkadotKeys.publicKey and publicKey from decodePair result are different for ecdsa type by an extra value on the end
-    const decoded = decodePair(keyPassphrase, base64Decode(keyjson.encoded), keyjson.encoding.type);
-
-    let publicKey, secretKey;
-    if (decoded.secretKey.length === 64) {
-      publicKey = decoded.publicKey;
-      secretKey = decoded.secretKey;
-    } else {
-      const pair = TYPE_FROM_SEED[polkadotType](decoded.secretKey);
-      publicKey = pair.publicKey;
-      secretKey = pair.secretKey;
-    }
-
-    const kpType = polkadotTypesToKeys[polkadotType];
-    if (!kpType) {
-      throw new Error(`Unknown polkadot type: ${polkadotType}`);
-    }
-
-    const formattedkeyDoc = {
-      id: `${controller}#keys-1`,
-      controller,
-      type: kpType,
-      publicKeyBase58: bs58.encode(publicKey),
-      privateKeyBase58: bs58.encode(secretKey),
-      publicKeyMultibase: `z${bs58.encode(publicKey)}`,
-      privateKeyMultibase: `z${bs58.encode(secretKey)}`,
-    };
-
-  // auto create controller
-  if (!controller) {
-    const keypairInstance = getKeypairFromDoc(formattedkeyDoc);
-    const fingerprint = keypairInstance.fingerprint();
-    if (!formattedkeyDoc.controller) {
-      formattedkeyDoc.controller = `did:key:${fingerprint}`;
-      formattedkeyDoc.id = `did:key:${fingerprint}#${fingerprint}`;
-    }
-  }
-  return formattedkeyDoc;
-}
-
 
 const TYPE_ADDRESS = {
   ecdsa: p => p.length > 32 ? blake2AsU8a(p) : p,
@@ -116,6 +68,15 @@ function encodeAddressType(publicKey, type) {
 }
 
 function verifyAddress(keyDoc, polkadotKeys) {
+  console.log('keyDoc', keyDoc)
+  if (typeof keyDoc.publicKeyBase58 !== 'string') {
+    throw new Error(`keydoc required publicKeyBase58 as string, got ${keyDoc.publicKeyBase58}`)
+  }
+
+  if (typeof keyDoc.privateKeyBase58 !== 'string') {
+    throw new Error(`keydoc required privateKeyBase58 as string, got ${keyDoc.privateKeyBase58}`)
+  }
+
   const publicKey = u8aToHex(base58btc.decode(keyDoc.publicKeyBase58));
   expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
   const address = encodeAddressType(publicKey, polkadotKeys.type);
