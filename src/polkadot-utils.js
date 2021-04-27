@@ -27,6 +27,7 @@ const TYPE_FROM_SEED = {
   sr25519: schnorrkelFromSeed
 };
 
+// TODO: maybe make this an SDK method instead?
 export function polkadotToKeydoc(polkadotKeys, controller = undefined, keyPassphrase = 'test') {
     const keyjson = polkadotKeys.toJson(keyPassphrase); // TODO: update method to import from json out of band
     const polkadotType = polkadotKeys.type || getKeyPairType(polkadotKeys);
