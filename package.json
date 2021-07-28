@@ -49,7 +49,8 @@
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
   "resolutions": {
-    "fetch-blob": "2.1.1"
+    "fetch-blob": "2.1.1",
+    "@polkadot/api": "^5.2.1"
   },
   "dependencies": {
     "@digitalbazaar/ed25519-verification-key-2018": "digitalbazaar/ed25519-verification-key-2018",
