@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/wallet",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -48,17 +48,6 @@
     "docs": "mkdir out && touch out/.nojekyll && jsdoc src -r -c .jsdoc -d out/reference",
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
-  "jest": {
-    "transform": {
-      "^.+\\.(ts|js)$": "babel-jest"
-    },
-    "transformIgnorePatterns": [
-      "/node_modules/(?!@polkadot|@babel)"
-    ],
-    "setupFilesAfterEnv": [
-      "./tests/setup-test-env.js"
-    ]
-  },
   "resolutions": {
     "fetch-blob": "2.1.1"
   },
@@ -69,7 +58,7 @@
     "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
     "@digitalbazaar/x25519-key-agreement-key-2020": "^1.2.0",
     "@digitalbazaar/did-method-key": "^1.1.0",
-    "@docknetwork/sdk": "0.4.4",
+    "@docknetwork/sdk": "0.5.0",
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
     "base58-universal": "1.0.0",
