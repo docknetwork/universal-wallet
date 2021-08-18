@@ -2283,9 +2283,10 @@
     esm "^3.2.25"
     x25519-key-agreement-2020-context "^1.0.0"
 
-"@digitalbazaar/ed25519-verification-key-2018@digitalbazaar/ed25519-verification-key-2018":
-  version "3.1.2-0"
-  resolved "https://codeload.github.com/digitalbazaar/ed25519-verification-key-2018/tar.gz/9e4d2394f48ff40d7e0579d23026e7dbae9915df"
+"@digitalbazaar/ed25519-verification-key-2018@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@digitalbazaar/ed25519-verification-key-2018/-/ed25519-verification-key-2018-3.1.1.tgz#969ca12159239e1bae00baa40c4aec12aef61b3e"
+  integrity sha512-4dtWUNIs30xAv8PZts+Xo5gPM5KEFKg2rw6OpDlo/gy20ViT9CtVqTDcuNG+3hiuKRBs/pTF/NuBeLTtagPvKA==
   dependencies:
     "@stablelib/ed25519" "^1.0.1"
     base58-universal "^1.0.0"

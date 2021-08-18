@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/wallet",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -53,7 +53,7 @@
     "@polkadot/api": "^5.2.1"
   },
   "dependencies": {
-    "@digitalbazaar/ed25519-verification-key-2018": "digitalbazaar/ed25519-verification-key-2018",
+    "@digitalbazaar/ed25519-verification-key-2018": "^3.1.1",
     "@digitalbazaar/ed25519-verification-key-2020": "^2.1.0",
     "@digitalbazaar/minimal-cipher": "^3.0.0",
     "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
