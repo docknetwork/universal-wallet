@@ -1,14 +1,10 @@
 import {
-  base64Decode, decodeAddress, encodeAddress, secp256k1Compress, blake2AsU8a,
-  naclKeypairFromSeed as naclFromSeed, schnorrkelKeypairFromSeed as schnorrkelFromSeed, secp256k1KeypairFromSeed as secp256k1FromSeed
+  base64Decode, encodeAddress,
+  naclKeypairFromSeed as naclFromSeed, schnorrkelKeypairFromSeed as schnorrkelFromSeed, secp256k1KeypairFromSeed as secp256k1FromSeed,
 } from '@polkadot/util-crypto';
-
-import * as base58btc from 'base58-universal';
-import { u8aToHex, hexToU8a, u8aToU8a, stringToU8a } from '@polkadot/util';
 
 import { decodePair } from '@polkadot/keyring/pair/decode';
 import { getKeyPairType } from '@docknetwork/sdk/utils/misc';
-import getKeyDoc from '@docknetwork/sdk/utils/vc/helpers';
 
 import * as bs58 from 'base58-universal';
 
@@ -24,7 +20,7 @@ const TYPE_FROM_SEED = {
   ecdsa: secp256k1FromSeed,
   ed25519: naclFromSeed,
   ethereum: secp256k1FromSeed,
-  sr25519: schnorrkelFromSeed
+  sr25519: schnorrkelFromSeed,
 };
 
 // TODO: maybe make this an SDK method instead?
@@ -35,7 +31,8 @@ export function polkadotToKeydoc(polkadotKeys, controller = undefined, keyPassph
   // NOTE: polkadotKeys.publicKey and publicKey from decodePair result are different for ecdsa type by an extra value on the end
   const decoded = decodePair(keyPassphrase, base64Decode(keyjson.encoded), keyjson.encoding.type);
 
-  let publicKey, secretKey;
+  let publicKey; let
+    secretKey;
   if (decoded.secretKey.length === 64) {
     publicKey = decoded.publicKey;
     secretKey = decoded.secretKey;
@@ -50,14 +47,16 @@ export function polkadotToKeydoc(polkadotKeys, controller = undefined, keyPassph
     throw new Error(`Unknown polkadot type: ${polkadotType}`);
   }
 
+  const publicKeyBase58 = bs58.encode(publicKey);
+  const privateKeyBase58 = bs58.encode(secretKey);
   const formattedkeyDoc = {
     id: `${controller}#${encodeAddress(publicKey)}`,
     controller,
     type: kpType,
-    publicKeyBase58: bs58.encode(publicKey),
-    privateKeyBase58: bs58.encode(secretKey),
-    publicKeyMultibase: `z${bs58.encode(publicKey)}`,
-    privateKeyMultibase: `z${bs58.encode(secretKey)}`,
+    publicKeyBase58,
+    privateKeyBase58,
+    publicKeyMultibase: `z${publicKeyBase58}`,
+    privateKeyMultibase: `z${privateKeyBase58}`,
   };
 
   // auto create controller

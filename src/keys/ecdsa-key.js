@@ -1,10 +1,88 @@
 import * as base58btc from 'base58-universal';
 import { LDKeyPair } from 'crypto-ld';
 import crypto, { randomBytes } from 'crypto';
-import { u8aToHex, hexToU8a, u8aToU8a, stringToU8a } from '@polkadot/util';
-const ec = new (require('elliptic')).ec('secp256k1');
+import { u8aToHex } from '@polkadot/util';
+
+import elliptic from 'elliptic';
+
+const ec = new elliptic.ec('secp256k1');
 
 const SUITE_ID = 'EcdsaSecp256k1VerificationKey2019';
+
+function _isEqualBuffer(buf1, buf2) {
+  if (buf1.length !== buf2.length) {
+    return false;
+  }
+  for (let i = 0; i < buf1.length; i++) {
+    if (buf1[i] !== buf2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * @ignore
+ * Returns an object with an async sign function.
+ * The sign function is bound to the KeyPair
+ * and then returned by the KeyPair's signer method.
+ * @param {Secp256k1KeyPair} key - An Secp256k1KeyPair.
+ *
+ * @returns {{sign: Function}} An object with an async function sign
+ * using the private key passed in.
+ */
+function secp256SignerFactory(key) {
+  if (!key.privateKeyBase58) {
+    return {
+      async sign() {
+        throw new Error('No private key to sign with.');
+      },
+    };
+  }
+
+  const privateKey = base58btc.decode(key.privateKeyBase58);
+  const k = ec.keyPair({
+    priv: u8aToHex(privateKey),
+    privEnc: 'hex',
+  });
+  return {
+    async sign({ data }) {
+      const md = crypto.createHash('sha256').update(data).digest();
+      return new Uint8Array(k.sign(md).toDER());
+    },
+  };
+}
+
+/**
+ * @ignore
+ * Returns an object with an async verify function.
+ * The verify function is bound to the KeyPair
+ * and then returned by the KeyPair's verifier method.
+ * @param {Secp256k1KeyPair} key - An Secp256k1KeyPair.
+ *
+ * @returns {{verify: Function}} An async verifier specific
+ * to the key passed in.
+ */
+function secp256VerifierFactory(key) {
+  const publicKey = base58btc.decode(key.publicKeyBase58);
+  // TODO: fix error in ec, unknown point format
+  const k = ec.keyPair({
+    pub: u8aToHex(publicKey),
+    pubEnc: 'hex',
+  });
+  return {
+    async verify({ data, signature }) {
+      const md = crypto.createHash('sha256').update(data).digest();
+      let verified = false;
+      try {
+        verified = k.verify(md, signature);
+      } catch (e) {
+        console.error('An error occurred when verifying signature: ', e);
+      }
+      return verified;
+    },
+  };
+}
 
 export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
   /**
@@ -32,11 +110,11 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
     this.controller = options.controller;
     this.privateKeyBase58 = options.privateKeyBase58;
     this.publicKeyBase58 = options.publicKeyBase58;
-    if(!this.publicKeyBase58) {
+    if (!this.publicKeyBase58) {
       throw new TypeError('The "publicKeyBase58" property is required.');
     }
 
-    if(this.controller && !this.id) {
+    if (this.controller && !this.id) {
       this.id = `${this.controller}#${this.fingerprint()}`;
     }
   }
@@ -69,9 +147,9 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
    * @returns {Promise<EcdsaSecp256k1VerificationKey2019>} Resolves with generated
    *   public/private key pair.
    */
-  static async generate({seed, ...keyPairOptions} = {}) {
+  static async generate({ seed, ...keyPairOptions } = {}) {
     let key;
-    if(seed) {
+    if (seed) {
       key = ec.keyFromPrivate(seed);
     } else {
       const randomSeed = randomBytes(32);
@@ -81,14 +159,16 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
     const pubPoint = key.getPublic();
     // encode public X and Y in compressed form
     const publicKeyBase58 = base58btc.encode(new Uint8Array(
-      pubPoint.encodeCompressed()));
+      pubPoint.encodeCompressed(),
+    ));
     const privateKeyBase58 = base58btc.encode(new Uint8Array(
-      key.getPrivate().toArray()));
+      key.getPrivate().toArray(),
+    ));
 
     return new EcdsaSecp256k1VerificationKey2019({
       publicKeyBase58,
       privateKeyBase58,
-      ...keyPairOptions
+      ...keyPairOptions,
     });
   }
 
@@ -101,9 +181,9 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
    * @returns {EcdsaSecp256k1VerificationKey2019} Returns key pair instance (with
    *   public key only).
    */
-  static fromFingerprint({fingerprint} = {}) {
-    if(!fingerprint ||
-      !(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
+  static fromFingerprint({ fingerprint } = {}) {
+    if (!fingerprint
+      || !(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
       throw new Error('`fingerprint` must be a multibase encoded string.');
     }
 
@@ -111,7 +191,7 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
     const buffer = base58btc.decode(fingerprint.substr(1));
 
     // buffer is: 0xe7 0x01 <public key bytes>
-    if(buffer[0] === 0xe7 && buffer[1] === 0x01) {
+    if (buffer[0] === 0xe7 && buffer[1] === 0x01) {
       return new EcdsaSecp256k1VerificationKey2019({
         publicKeyBase58: base58btc.encode(buffer.slice(2)),
       });
@@ -160,28 +240,29 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
    * @returns {object} A plain js object that's ready for serialization
    *   (to JSON, etc), for use in DIDs, Linked Data Proofs, etc.
    */
-  export({publicKey = false, privateKey = false, includeContext = false} = {}) {
-    if(!(publicKey || privateKey)) {
+  export({ publicKey = false, privateKey = false, includeContext = false } = {}) {
+    if (!(publicKey || privateKey)) {
       throw new TypeError(
-        'Export requires specifying either "publicKey" or "privateKey".');
+        'Export requires specifying either "publicKey" or "privateKey".',
+      );
     }
     const exportedKey = {
       id: this.id,
-      type: this.type
+      type: this.type,
     };
-    if(includeContext) {
+    if (includeContext) {
       exportedKey['@context'] = EcdsaSecp256k1VerificationKey2019.SUITE_CONTEXT;
     }
-    if(this.controller) {
+    if (this.controller) {
       exportedKey.controller = this.controller;
     }
-    if(publicKey) {
+    if (publicKey) {
       exportedKey.publicKeyBase58 = this.publicKeyBase58;
     }
-    if(privateKey) {
+    if (privateKey) {
       exportedKey.privateKeyBase58 = this.privateKeyBase58;
     }
-    if(this.revoked) {
+    if (this.revoked) {
       exportedKey.revoked = this.revoked;
     }
     return exportedKey;
@@ -199,39 +280,39 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
    *
    * @returns {{valid: boolean, error: *}} Result of verification.
    */
-  verifyFingerprint({fingerprint} = {}) {
+  verifyFingerprint({ fingerprint } = {}) {
     // fingerprint should have `z` prefix indicating
     // that it's multi-base encoded
-    if(!(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
+    if (!(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
       return {
         error: new Error('`fingerprint` must be a multibase encoded string.'),
-        valid: false
+        valid: false,
       };
     }
     let fingerprintBuffer;
     try {
       fingerprintBuffer = base58btc.decode(fingerprint.substr(1));
-      if(!fingerprintBuffer) {
+      if (!fingerprintBuffer) {
         throw new TypeError('Invalid encoding of fingerprint.');
       }
-    } catch(e) {
-      return {error: e, valid: false};
+    } catch (e) {
+      return { error: e, valid: false };
     }
 
     const buffersEqual = _isEqualBuffer(this._publicKeyBuffer,
       fingerprintBuffer.slice(2));
 
     // validate the first two multicodec bytes 0xdf01
-    const valid = fingerprintBuffer[0] === 0xe7 &&
-      fingerprintBuffer[1] === 0x01 &&
-      buffersEqual;
-    if(!valid) {
+    const valid = fingerprintBuffer[0] === 0xe7
+      && fingerprintBuffer[1] === 0x01
+      && buffersEqual;
+    if (!valid) {
       return {
         error: new Error('The fingerprint does not match the public key.'),
-        valid: false
+        valid: false,
       };
     }
-    return {valid};
+    return { valid };
   }
 
   /**
@@ -255,80 +336,4 @@ export class EcdsaSecp256k1VerificationKey2019 extends LDKeyPair {
 // Used by CryptoLD harness for dispatching.
 EcdsaSecp256k1VerificationKey2019.suite = SUITE_ID;
 // Used by CryptoLD harness's fromKeyId() method.
-EcdsaSecp256k1VerificationKey2019.SUITE_CONTEXT =
-  'https://w3id.org/security/suites/sr25519-2020/v1'; // TODO: proper context that can be resolved
-
-function _isEqualBuffer(buf1, buf2) {
-  if(buf1.length !== buf2.length) {
-    return false;
-  }
-  for(let i = 0; i < buf1.length; i++) {
-    if(buf1[i] !== buf2[i]) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
- * @ignore
- * Returns an object with an async sign function.
- * The sign function is bound to the KeyPair
- * and then returned by the KeyPair's signer method.
- * @param {Secp256k1KeyPair} key - An Secp256k1KeyPair.
- *
- * @returns {{sign: Function}} An object with an async function sign
- * using the private key passed in.
- */
-function secp256SignerFactory(key) {
-  if(!key.privateKeyBase58) {
-    return {
-      async sign() {
-        throw new Error('No private key to sign with.');
-      }
-    };
-  }
-
-  const privateKey = base58btc.decode(key.privateKeyBase58);
-  const k = ec.keyPair({
-    priv: u8aToHex(privateKey),
-    privEnc: 'hex'
-  });
-  return {
-    async sign({data}) {
-      const md = crypto.createHash('sha256').update(data).digest();
-      return new Uint8Array(k.sign(md).toDER());
-    }
-  };
-}
-
-/**
- * @ignore
- * Returns an object with an async verify function.
- * The verify function is bound to the KeyPair
- * and then returned by the KeyPair's verifier method.
- * @param {Secp256k1KeyPair} key - An Secp256k1KeyPair.
- *
- * @returns {{verify: Function}} An async verifier specific
- * to the key passed in.
- */
-function secp256VerifierFactory(key) {
-  const publicKey = base58btc.decode(key.publicKeyBase58);
-  // TODO: fix error in ec, unknown point format
-  const k = ec.keyPair({
-    pub: u8aToHex(publicKey),
-    pubEnc: 'hex'
-  });
-  return {
-    async verify({data, signature}) {
-      const md = crypto.createHash('sha256').update(data).digest();
-      let verified = false;
-      try {
-        verified = k.verify(md, signature);
-      } catch(e) {
-        console.error('An error occurred when verifying signature: ', e);
-      }
-      return verified;
-    }
-  };
-}
+EcdsaSecp256k1VerificationKey2019.SUITE_CONTEXT = 'https://w3id.org/security/suites/sr25519-2020/v1'; // TODO: proper context that can be resolved

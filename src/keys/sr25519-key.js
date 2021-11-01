@@ -5,6 +5,18 @@ import { randomBytes } from 'crypto';
 
 const SUITE_ID = 'Sr25519VerificationKey2020';
 
+function _isEqualBuffer(buf1, buf2) {
+  if (buf1.length !== buf2.length) {
+    return false;
+  }
+  for (let i = 0; i < buf1.length; i++) {
+    if (buf1[i] !== buf2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export class Sr25519VerificationKey2020 extends LDKeyPair {
   /**
    * An implementation of the Sr25519VerificationKey2020 spec, for use with
@@ -29,11 +41,11 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
     super(options);
     this.type = SUITE_ID;
     this.publicKeyMultibase = options.publicKeyMultibase;
-    if(!this.publicKeyMultibase) {
+    if (!this.publicKeyMultibase) {
       throw new TypeError('The "publicKeyMultibase" property is required.');
     }
     this.privateKeyMultibase = options.privateKeyMultibase;
-    if(this.controller && !this.id) {
+    if (this.controller && !this.id) {
       this.id = `${this.controller}#${this.fingerprint()}`;
     }
   }
@@ -66,9 +78,9 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    * @returns {Promise<Sr25519VerificationKey2020>} Resolves with generated
    *   public/private key pair.
    */
-  static async generate({seed, ...keyPairOptions} = {}) {
+  static async generate({ seed, ...keyPairOptions } = {}) {
     let keyObject;
-    if(seed) {
+    if (seed) {
       keyObject = schnorrkelKeypairFromSeed(seed);
     } else {
       const randomSeed = randomBytes(32);
@@ -78,7 +90,7 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
       // prefix with `z` to indicate multi-base base58btc encoding
       publicKeyMultibase: `z${base58btc.encode(keyObject.publicKey)}`,
       privateKeyMultibase: `z${base58btc.encode(keyObject.secretKey)}`,
-      ...keyPairOptions
+      ...keyPairOptions,
     });
   }
 
@@ -91,9 +103,9 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    * @returns {Sr25519VerificationKey2020} Returns key pair instance (with
    *   public key only).
    */
-  static fromFingerprint({fingerprint} = {}) {
-    if(!fingerprint ||
-      !(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
+  static fromFingerprint({ fingerprint } = {}) {
+    if (!fingerprint
+      || !(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
       throw new Error('`fingerprint` must be a multibase encoded string.');
     }
 
@@ -101,9 +113,9 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
     const buffer = base58btc.decode(fingerprint.substr(1));
 
     // buffer is: 0xdf 0x01 <public key bytes>
-    if(buffer[0] === 0xdf && buffer[1] === 0x01) {
+    if (buffer[0] === 0xdf && buffer[1] === 0x01) {
       return new Sr25519VerificationKey2020({
-        publicKeyMultibase: `z${base58btc.encode(buffer.slice(2))}`
+        publicKeyMultibase: `z${base58btc.encode(buffer.slice(2))}`,
       });
     }
 
@@ -111,13 +123,13 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
   }
 
   get _publicKeyBuffer() {
-    return this.publicKeyMultibase &&
-      base58btc.decode(this.publicKeyMultibase.substr(1));
+    return this.publicKeyMultibase
+      && base58btc.decode(this.publicKeyMultibase.substr(1));
   }
 
   get _privateKeyBuffer() {
-    return this.privateKeyMultibase &&
-      base58btc.decode(this.privateKeyMultibase.substr(1));
+    return this.privateKeyMultibase
+      && base58btc.decode(this.privateKeyMultibase.substr(1));
   }
 
   /**
@@ -152,28 +164,29 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    * @returns {object} A plain js object that's ready for serialization
    *   (to JSON, etc), for use in DIDs, Linked Data Proofs, etc.
    */
-  export({publicKey = false, privateKey = false, includeContext = false} = {}) {
-    if(!(publicKey || privateKey)) {
+  export({ publicKey = false, privateKey = false, includeContext = false } = {}) {
+    if (!(publicKey || privateKey)) {
       throw new TypeError(
-        'Export requires specifying either "publicKey" or "privateKey".');
+        'Export requires specifying either "publicKey" or "privateKey".',
+      );
     }
     const exportedKey = {
       id: this.id,
-      type: this.type
+      type: this.type,
     };
-    if(includeContext) {
+    if (includeContext) {
       exportedKey['@context'] = Sr25519VerificationKey2020.SUITE_CONTEXT;
     }
-    if(this.controller) {
+    if (this.controller) {
       exportedKey.controller = this.controller;
     }
-    if(publicKey) {
+    if (publicKey) {
       exportedKey.publicKeyMultibase = this.publicKeyMultibase;
     }
-    if(privateKey) {
+    if (privateKey) {
       exportedKey.privateKeyMultibase = this.privateKeyMultibase;
     }
-    if(this.revoked) {
+    if (this.revoked) {
       exportedKey.revoked = this.revoked;
     }
     return exportedKey;
@@ -191,83 +204,70 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
    *
    * @returns {{valid: boolean, error: *}} Result of verification.
    */
-  verifyFingerprint({fingerprint} = {}) {
+  verifyFingerprint({ fingerprint } = {}) {
     // fingerprint should have `z` prefix indicating
     // that it's multi-base encoded
-    if(!(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
+    if (!(typeof fingerprint === 'string' && fingerprint[0] === 'z')) {
       return {
         error: new Error('`fingerprint` must be a multibase encoded string.'),
-        valid: false
+        valid: false,
       };
     }
     let fingerprintBuffer;
     try {
       fingerprintBuffer = base58btc.decode(fingerprint.substr(1));
-      if(!fingerprintBuffer) {
+      if (!fingerprintBuffer) {
         throw new TypeError('Invalid encoding of fingerprint.');
       }
-    } catch(e) {
-      return {error: e, valid: false};
+    } catch (e) {
+      return { error: e, valid: false };
     }
 
     const buffersEqual = _isEqualBuffer(this._publicKeyBuffer,
       fingerprintBuffer.slice(2));
 
     // validate the first two multicodec bytes 0xdf01
-    const valid = fingerprintBuffer[0] === 0xdf &&
-      fingerprintBuffer[1] === 0x01 &&
-      buffersEqual;
-    if(!valid) {
+    const valid = fingerprintBuffer[0] === 0xdf
+      && fingerprintBuffer[1] === 0x01
+      && buffersEqual;
+    if (!valid) {
       return {
         error: new Error('The fingerprint does not match the public key.'),
-        valid: false
+        valid: false,
       };
     }
-    return {valid};
+    return { valid };
   }
 
   signer() {
     const publicKeyBuffer = this._publicKeyBuffer;
     const privateKeyBuffer = this._privateKeyBuffer;
-    if(!privateKeyBuffer) {
+    if (!privateKeyBuffer) {
       throw new Error('No private key to sign with.');
     }
 
     return {
-      async sign({data}) {
+      async sign({ data }) {
         return schnorrkelSign(data, {
           publicKey: publicKeyBuffer,
           secretKey: privateKeyBuffer,
         });
       },
-      id: this.id
+      id: this.id,
     };
   }
 
   verifier() {
     const publicKeyBuffer = this._publicKeyBuffer;
     return {
-      async verify({data, signature}) {
+      async verify({ data, signature }) {
         return schnorrkelVerify(data, signature, publicKeyBuffer);
       },
-      id: this.id
+      id: this.id,
     };
   }
 }
 // Used by CryptoLD harness for dispatching.
 Sr25519VerificationKey2020.suite = SUITE_ID;
 // Used by CryptoLD harness's fromKeyId() method.
-Sr25519VerificationKey2020.SUITE_CONTEXT =
-  'https://w3id.org/security/suites/sr25519-2020/v1'; // TODO: proper context that can be resolved
-
-function _isEqualBuffer(buf1, buf2) {
-  if(buf1.length !== buf2.length) {
-    return false;
-  }
-  for(let i = 0; i < buf1.length; i++) {
-    if(buf1[i] !== buf2[i]) {
-      return false;
-    }
-  }
-  return true;
-}
+Sr25519VerificationKey2020.SUITE_CONTEXT = 'https://w3id.org/security/suites/sr25519-2020/v1'; // TODO: proper context that can be resolved
