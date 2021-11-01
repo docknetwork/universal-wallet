@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/wallet",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -49,8 +49,7 @@
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
   "resolutions": {
-    "fetch-blob": "2.1.1",
-    "@polkadot/api": "^5.2.1"
+    "fetch-blob": "2.1.1"
   },
   "dependencies": {
     "@digitalbazaar/ed25519-verification-key-2018": "^3.1.1",
@@ -59,7 +58,7 @@
     "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
     "@digitalbazaar/x25519-key-agreement-key-2020": "^1.2.0",
     "@digitalbazaar/did-method-key": "^1.1.0",
-    "@docknetwork/sdk": "^0.5.2",
+    "@docknetwork/sdk": "^1.0.1-hotfix",
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
     "base58-universal": "1.0.0",
