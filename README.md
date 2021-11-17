@@ -1,7 +1,25 @@
-# Dock Wallet Library
-In-development, initially based on: https://github.com/w3c-ccg/universal-wallet-interop-spec/blob/master/packages/universal-wallet
-Currently only supporting X25519 and ED25519 keys, planning to expand. See: https://github.com/digitalbazaar/minimal-cipher for key management examples
+# Dock Universal Wallet Library
 
-# Cool links
-https://did-edv.web.app/
-https://medium.com/transmute-techtalk/encrypted-data-vaults-c794055b170e
+This wallet is intended to implement the universl wallet W3C spec for storing credentials, keys, dids and more JSON-LD documents. It comes bundled with some storage interfaces, supports EDVs and is in use by the Dock Wallet app. Check the [examples](./examples) and [tests](./tests) folders for reference implementations. The library is currently in beta status.
+
+[![Build and Tests](https://github.com/docknetwork/sdk/actions/workflows/test.yml/badge.svg)](https://github.com/docknetwork/sdk/actions/workflows/test.yml)
+
+## Features
+- Universal Wallet spec compliant
+- EDV storage over HTTP
+- Local FS storage
+- Expandable storage interface (eg, for react native)
+- Wallets are encrypted at rest
+- Can be used server or client side
+- Can issue credentials straight from the wallet
+- Built in did:key support
+- Helpers for polkadotjs key management
+
+## Install or build
+- Run `yarn add @docknetwork/wallet` or `npm install @docknetwork/wallet` to install the package from npm
+- When building from source:
+    - Run `yarn` to install the dependencies
+    - Run `yarn build` to create a distribution version.
+
+## Reference links
+- https://medium.com/transmute-techtalk/encrypted-data-vaults-c794055b170e
