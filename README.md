@@ -23,3 +23,6 @@ This wallet is intended to implement the universl wallet W3C spec for storing cr
 
 ## Reference links
 - https://medium.com/transmute-techtalk/encrypted-data-vaults-c794055b170e
+
+## Todos
+- Decouple polkadot libraries 
