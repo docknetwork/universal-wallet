@@ -2390,7 +2390,7 @@
   resolved "https://registry.yarnpkg.com/@docknetwork/node-types/-/node-types-0.6.0.tgz#08a2dae1551c2ee3612b13d9af907733e7723dde"
   integrity sha512-Bkl1Fxhu0Viyu7g9dTwFeMnfXsuXXlQ+PftLv2NV0Uh240HBXfQxm3PxPLw3JMAo0UCQw/g7xUHQrV5hJzfB4g==
 
-"@docknetwork/sdk@^1.1.0":
+"@docknetwork/sdk@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@docknetwork/sdk/-/sdk-1.2.1.tgz#5b3a9b516bdcfb53b72ac1423e93423e56079d3d"
   integrity sha512-x4YINCTFZvXu1HHzRA1vQ49irrEB50A/93tdV1i+z9jCqtXl/7gDRBNUtTnwaOHQt5aKNzcXV+nX6iBUXxyv+g==
