@@ -1,29 +1,16 @@
-import React, {useState, useCallback} from 'react'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import React, { useState, useCallback } from 'react';
+import Head from 'next/head';
+import Image from 'next/image';
 
-// import DockWallet from '../../src/index';
 import DockWallet from '@docknetwork/wallet';
 
+import { useDropzone } from 'react-dropzone';
 import lockedJSON from './wallet.json';
-import { useEffect } from 'react';
 
-import {useDropzone} from 'react-dropzone';
+import styles from '../styles/Home.module.css';
 
-function UploadWalletView({ wallet, setWallet }) {
-  const [walletPW, setWalletPW] = useState();
-
-  const onDrop = useCallback(acceptedFiles => {
-    const acceptedFile = acceptedFiles[0];
-    var reader = new FileReader();
-    reader.readAsText(acceptedFile);
-    reader.onload = function() {
-      loadWallet(JSON.parse(reader.result), 'Testbuild155!');
-    }
-  }, [])
-
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+function UploadWalletView({ setWallet }) {
+  // const [walletPW, setWalletPW] = useState();
 
   async function loadWallet(json, pw) {
     const wallet = new DockWallet('test');
@@ -35,6 +22,17 @@ function UploadWalletView({ wallet, setWallet }) {
     loadWallet(lockedJSON, 'Testbuild155!');
   }
 
+  const onDrop = useCallback((acceptedFiles) => {
+    const acceptedFile = acceptedFiles[0];
+    const reader = new FileReader();
+    reader.readAsText(acceptedFile);
+    reader.onload = function () {
+      loadWallet(JSON.parse(reader.result), 'Testbuild155!');
+    };
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   return (
     <>
         <h1 className={styles.title}>
@@ -45,14 +43,13 @@ function UploadWalletView({ wallet, setWallet }) {
           Upload your wallet JSON file here to view its contents
         </p>
 
-    
         <div className={styles.grid}>
           <div className={styles.cardFull} {...getRootProps()}>
           <input {...getInputProps()} />
           {
-            isDragActive ?
-              <div>Drop the files here ...</div> :
-              <div>Drag 'n' drop some files here, or click to select files</div>
+            isDragActive
+              ? <div>Drop the files here ...</div>
+              : <div>Drag and drop some files here, or click to select files</div>
           }
           </div>
 
@@ -74,7 +71,7 @@ function UploadWalletView({ wallet, setWallet }) {
             </p>
           </a>
         </div>
-    </> 
+    </>
   );
 }
 
@@ -126,5 +123,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )
+  );
 }
