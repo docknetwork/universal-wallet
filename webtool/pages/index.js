@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 
 import DockWallet from '@docknetwork/wallet';
 
@@ -26,7 +25,7 @@ function UploadWalletView({ setWallet }) {
     const acceptedFile = acceptedFiles[0];
     const reader = new FileReader();
     reader.readAsText(acceptedFile);
-    reader.onload = function () {
+    reader.onload = () => {
       loadWallet(JSON.parse(reader.result), 'Testbuild155!');
     };
   }, []);
@@ -89,7 +88,7 @@ function InspectWalletView({ wallet }) {
   );
 }
 
-export default function Home() {
+export default function Index() {
   const [wallet, setWallet] = useState();
 
   return (
@@ -118,7 +117,7 @@ export default function Home() {
         >
           Powered by{' '}
           <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
+            <img src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
       </footer>
