@@ -65,6 +65,11 @@
     Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
+.passwordForm {
+  max-width: 600px;
+}
+
+.passwordForm,
 .grid {
   display: flex;
   align-items: center;

@@ -8,13 +8,14 @@ import lockedJSON from './wallet.json';
 
 import styles from '../styles/Home.module.css';
 
-function UploadWalletView({ setWallet }) {
+function UploadWalletView({ setWallet, setWalletJSON }) {
   // const [walletPW, setWalletPW] = useState();
 
   async function loadWallet(json, pw) {
     const wallet = new DockWallet('test');
     await wallet.import(json, pw);
     setWallet(wallet);
+    setWalletJSON(wallet);
   }
 
   function handleUseExampleWallet() {
@@ -26,7 +27,7 @@ function UploadWalletView({ setWallet }) {
     const reader = new FileReader();
     reader.readAsText(acceptedFile);
     reader.onload = () => {
-      loadWallet(JSON.parse(reader.result), 'Testbuild155!');
+      setWalletJSON(JSON.parse(reader.result));
     };
   }, []);
 
@@ -74,22 +75,69 @@ function UploadWalletView({ setWallet }) {
   );
 }
 
+function EnterPasswordView({
+  walletJSON, importWallet,
+}) {
+  const [password, setPassword] = useState();
+
+  function handleChangePassword(e) {
+    setPassword(e.target.value);
+  }
+
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+    await importWallet(walletJSON, password);
+  }
+
+  return (
+    <>
+      <h1 className={styles.title}>
+        Password Please
+      </h1>
+
+      <p className={styles.description}>
+        Enter the password used when exporting this wallet
+      </p>
+
+      <form className={styles.passwordForm} onSubmit={handleFormSubmit}>
+        <input
+          name="password"
+          type="password"
+          value={password}
+          onChange={handleChangePassword} />
+        <input type="submit" />
+      </form>
+    </>
+  );
+}
+
 function InspectWalletView({ wallet }) {
   return (
     <div>
-
       <code>
         <pre>
           {JSON.stringify(wallet.toJSON(), null, 2)}
         </pre>
       </code>
-
     </div>
   );
 }
 
 export default function Index() {
   const [wallet, setWallet] = useState();
+  const [walletJSON, setWalletJSON] = useState();
+  const isLocked = !!(!wallet && walletJSON && walletJSON.credentialSubject);
+
+  async function importWallet(json, pw) {
+    const encryptedWallet = new DockWallet('test');
+    try {
+      await encryptedWallet.import(json, pw);
+      setWallet(encryptedWallet);
+    } catch (e) {
+      console.error(e);
+      alert('unable to decrypt wallet');
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -101,10 +149,16 @@ export default function Index() {
 
       <main className={styles.main}>
         {
-          wallet ? (
-            <InspectWalletView {...{ wallet, setWallet }} />
+          (wallet || walletJSON) ? (
+            isLocked ? (
+              <EnterPasswordView {...{
+                wallet, walletJSON, setWallet, importWallet,
+              }} />
+            ) : (
+              <InspectWalletView {...{ wallet, setWallet }} />
+            )
           ) : (
-            <UploadWalletView {...{ wallet, setWallet }} />
+            <UploadWalletView {...{ wallet, setWallet, setWalletJSON }} />
           )
         }
       </main>
