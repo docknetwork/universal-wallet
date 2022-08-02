@@ -1,0 +1,23 @@
+version: '3'
+services:
+  mongo:
+    ports:
+      - '27017:27017'
+    image: mongo
+    restart: always
+    volumes:
+      - apidata:/data/db
+
+  edv:
+    image: docknetwork/edv:latest
+    ports:
+      - '8080:8080'
+      - '9876:8080'
+    depends_on:
+      - "mongo"
+    environment:
+      - EDV_BASE_URL=http://localhost:8080
+      - MONGO_DB_CONNECTION_STRING=mongodb://mongo:27017/test
+
+volumes:
+  apidata:
