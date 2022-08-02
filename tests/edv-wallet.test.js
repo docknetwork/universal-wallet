@@ -35,9 +35,7 @@ describe('EDV Wallet', () => {
   let edvWallet;
   beforeAll(async () => {
     keys.hmac = await MockHmac.create();
-  });
 
-  test('Can create a new EDV wallet', async () => {
     const storageInterface = new EDVHTTPStorageInterface({
       url: 'http://localhost:8080',
       invocationSigner,
@@ -48,9 +46,13 @@ describe('EDV Wallet', () => {
       referenceId: randomAsHex(32),
       controller,
     });
-    expect(walletId).toBeDefined();
 
     edvWallet = new EDVWallet(walletId, { storageInterface });
+  });
+
+  test('Can create a new EDV wallet', async () => {
+    expect(walletId).toBeDefined();
+    expect(edvWallet).toBeDefined();
     expect(edvWallet.id).toEqual(walletId);
   });
 

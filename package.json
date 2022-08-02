@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/wallet",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -8,18 +8,17 @@
     "url": "https://github.com/docknetwork/wallet"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.7",
-    "@babel/node": "^7.8.7",
-    "@babel/preset-env": "^7.8.7",
+    "@babel/cli": "^7.15.4",
+    "@babel/core": "^7.15.4",
+    "@babel/node": "^7.15.4",
+    "@babel/preset-env": "^7.15.6",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-wasm": "^5.1.0",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^26.0.24",
     "@types/node": "^14.14.35",
-    "babel-core": "7.0.0-bridge.0",
     "babel-jest": "24.5.0",
     "concurrently": "^4.1.0",
     "eslint": "^6.8.0",
@@ -40,6 +39,7 @@
     "example-fs-wallet": "npx babel-node example/example-fs-wallet",
     "example-edv-wallet": "npx babel-node example/example-edv-wallet",
     "example-edv-http": "npx babel-node example/example-edv-http-storage",
+    "run-examples": "yarn example-fs-wallet && yarn example-edv-wallet && yarn example-edv-http",
     "test": "jest --verbose ./tests",
     "test-wallet": "jest --verbose ./tests/wallet",
     "test-edvwallet": "jest --verbose ./tests/edv-wallet",
@@ -58,7 +58,7 @@
     "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
     "@digitalbazaar/x25519-key-agreement-key-2020": "^1.2.0",
     "@digitalbazaar/did-method-key": "^1.1.0",
-    "@docknetwork/sdk": "^1.2.4",
+    "@docknetwork/sdk": "2.2.0",
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
     "base58-universal": "1.0.0",

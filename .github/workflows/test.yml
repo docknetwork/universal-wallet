@@ -6,15 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ibnesayeed/setup-ipfs@0.6.0
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-        with:
-          run_daemon: true
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: '16.x'
       - run: yarn install --frozen-lockfile --ignore-scripts
+      - run: docker-compose -f ./docker-compose.edv.yml up -d
       - run: yarn build
       - run: yarn test
-      - run: yarn run-example
+      - run: yarn run-examples
