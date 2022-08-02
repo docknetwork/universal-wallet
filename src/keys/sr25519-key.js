@@ -1,6 +1,6 @@
 import * as base58btc from 'base58-universal';
 import { LDKeyPair } from 'crypto-ld';
-import { schnorrkelVerify, schnorrkelSign, schnorrkelKeypairFromSeed } from '@polkadot/util-crypto/schnorrkel';
+import { sr25519Verify, sr25519Sign, sr25519PairFromSeed } from '@polkadot/util-crypto/sr25519';
 import { randomBytes } from 'crypto';
 
 const SUITE_ID = 'Sr25519VerificationKey2020';
@@ -81,10 +81,10 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
   static async generate({ seed, ...keyPairOptions } = {}) {
     let keyObject;
     if (seed) {
-      keyObject = schnorrkelKeypairFromSeed(seed);
+      keyObject = sr25519PairFromSeed(seed);
     } else {
       const randomSeed = randomBytes(32);
-      keyObject = schnorrkelKeypairFromSeed(randomSeed);
+      keyObject = sr25519PairFromSeed(randomSeed);
     }
     return new Sr25519VerificationKey2020({
       // prefix with `z` to indicate multi-base base58btc encoding
@@ -248,7 +248,7 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
 
     return {
       async sign({ data }) {
-        return schnorrkelSign(data, {
+        return sr25519Sign(data, {
           publicKey: publicKeyBuffer,
           secretKey: privateKeyBuffer,
         });
@@ -261,7 +261,7 @@ export class Sr25519VerificationKey2020 extends LDKeyPair {
     const publicKeyBuffer = this._publicKeyBuffer;
     return {
       async verify({ data, signature }) {
-        return schnorrkelVerify(data, signature, publicKeyBuffer);
+        return sr25519Verify(data, signature, publicKeyBuffer);
       },
       id: this.id,
     };
