@@ -39,6 +39,7 @@
     "example-fs-wallet": "npx babel-node example/example-fs-wallet",
     "example-edv-wallet": "npx babel-node example/example-edv-wallet",
     "example-edv-http": "npx babel-node example/example-edv-http-storage",
+    "run-examples": "yarn example-fs-wallet && yarn example-edv-wallet && yarn example-edv-http",
     "test": "jest --verbose ./tests",
     "test-wallet": "jest --verbose ./tests/wallet",
     "test-edvwallet": "jest --verbose ./tests/edv-wallet",
