@@ -1,6 +1,7 @@
 import DIDResolver from '@docknetwork/sdk/did-resolver';
+import { driver } from '@digitalbazaar/did-method-key';
 
-const didKeyDriver = require('did-method-key').driver();
+const didKeyDriver = driver();
 
 // this resolve should be able to resolve did:key dids
 // perhaps this would be a good addition to the SDK?

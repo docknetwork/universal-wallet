@@ -1,6 +1,8 @@
 import {
   base64Decode, encodeAddress,
-  naclKeypairFromSeed as naclFromSeed, schnorrkelKeypairFromSeed as schnorrkelFromSeed, secp256k1KeypairFromSeed as secp256k1FromSeed,
+  ed25519PairFromSeed,
+  sr25519PairFromSeed,
+  secp256k1PairFromSeed,
 } from '@polkadot/util-crypto';
 
 import { decodePair } from '@polkadot/keyring/pair/decode';
@@ -13,14 +15,16 @@ import { getKeypairFromDoc } from './methods/keypairs';
 const polkadotTypesToKeys = {
   sr25519: 'Sr25519VerificationKey2020',
   ed25519: 'Ed25519VerificationKey2018',
+  secp256k1: 'EcdsaSecp256k1VerificationKey2019',
   ecdsa: 'EcdsaSecp256k1VerificationKey2019',
 };
 
 const TYPE_FROM_SEED = {
-  ecdsa: secp256k1FromSeed,
-  ed25519: naclFromSeed,
-  ethereum: secp256k1FromSeed,
-  sr25519: schnorrkelFromSeed,
+  ecdsa: secp256k1PairFromSeed,
+  secp256k1: secp256k1PairFromSeed,
+  ed25519: ed25519PairFromSeed,
+  ethereum: secp256k1PairFromSeed,
+  sr25519: sr25519PairFromSeed,
 };
 
 // TODO: maybe make this an SDK method instead?
@@ -37,7 +41,12 @@ export function polkadotToKeydoc(polkadotKeys, controller = undefined, keyPassph
     publicKey = decoded.publicKey;
     secretKey = decoded.secretKey;
   } else {
-    const pair = TYPE_FROM_SEED[polkadotType](decoded.secretKey);
+    const typeFunc = TYPE_FROM_SEED[polkadotType];
+    if (!typeFunc) {
+      console.log('TYPE_FROM_SEED', TYPE_FROM_SEED, polkadotType);
+      throw new Error(`Unsupported key type: ${polkadotType}`);
+    }
+    const pair = typeFunc(decoded.secretKey);
     publicKey = pair.publicKey;
     secretKey = pair.secretKey;
   }
