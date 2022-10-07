@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/wallet",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -58,7 +58,7 @@
     "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
     "@digitalbazaar/x25519-key-agreement-key-2020": "^1.2.0",
     "@digitalbazaar/did-method-key": "^1.1.0",
-    "@docknetwork/sdk": "2.2.0",
+    "@docknetwork/sdk": "2.4.1",
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
     "base58-universal": "1.0.0",
