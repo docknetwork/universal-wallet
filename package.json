@@ -1,6 +1,6 @@
 {
-  "name": "@docknetwork/wallet",
-  "version": "0.2.0",
+  "name": "@docknetwork/universal-wallet",
+  "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
