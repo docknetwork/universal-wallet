@@ -6,10 +6,6 @@ import {
 } from './methods/contents-crypto';
 
 import { passwordToKeypair } from './methods/password';
-import {
-  getKeypairFromController,
-  getKeydocFromPair,
-} from './methods/keypairs';
 
 import {
   WALLET_DEFAULT_CONTEXT,
