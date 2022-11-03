@@ -1,11 +1,8 @@
-import { randomAsHex } from '@polkadot/util-crypto';
 import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
 
-import DockWallet from '../src/index';
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 import EDVWallet from '../src/edv-wallet';
-
 import MockHmac from './mock/hmac';
 
 import {
@@ -16,6 +13,10 @@ import {
 import {
   WALLET_UNSIGNED_CREDENTIAL,
 } from './constants';
+
+// Taken from https://stackoverflow.com/questions/58325771/how-to-generate-random-hex-string-in-javascript
+// does not need to be secure for test purposes
+const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
 // These tests rely on a local EDV server running on port 8080
 describe('EDV Wallet', () => {
@@ -43,7 +44,7 @@ describe('EDV Wallet', () => {
     });
 
     walletId = await storageInterface.createEdv({
-      referenceId: randomAsHex(32),
+      referenceId: genRanHex(32),
       controller,
     });
 

@@ -19,7 +19,7 @@ export async function lockWalletContents(contents, kp) {
       const kpResult = kp.toJsonWebKeyPair ? kp.toJsonWebKeyPair(false) : kp;
       if (kpResult.type !== 'X25519KeyAgreementKey2020' && kpResult.type !== 'JsonWebKey2020') {
         // TODO: need a method to convert non-X25519KeyAgreementKey2020 to json here
-        throw new Error('Cipher expects either X25519KeyAgreementKey2020 or JsonWebKey2020, conversion not yet supported.');
+        throw new Error('Cipher expects either X25519KeyAgreementKey2020 or JsonWebKey2020, conversion not supported.');
       }
       return kpResult;
     }

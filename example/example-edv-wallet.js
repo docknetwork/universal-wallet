@@ -33,7 +33,6 @@ async function main() {
   const { controller } = KEY_LOCAL;
   const invocationSigner = getKeypairFromDoc(KEY_LOCAL); // hacky mock signer
   invocationSigner.sign = invocationSigner.signer().sign;
-  console.log('invocationSigner:', invocationSigner);
 
   // Creating the EDV is considered out of band for the EDVWallet class, so we do it here through the storage interface
   // in a real world scenario, the creation may be done differently or require payment
