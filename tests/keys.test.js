@@ -1,22 +1,10 @@
 import DockWallet from '../src/index';
 import dock from '@docknetwork/sdk';
 import {
-  base64Decode, decodeAddress, encodeAddress, secp256k1Compress, blake2AsU8a,
-  naclKeypairFromSeed as naclFromSeed, schnorrkelKeypairFromSeed as schnorrkelFromSeed, secp256k1KeypairFromSeed as secp256k1FromSeed
+  encodeAddress, blake2AsU8a,
 } from '@polkadot/util-crypto';
 import * as base58btc from 'base58-universal';
-import { u8aToHex, hexToU8a, u8aToU8a, stringToU8a } from '@polkadot/util';
-
-import {
-  decodePair,
-} from '@polkadot/keyring/pair/decode';
-
-import {
-  getKeyPairType,
-} from '@docknetwork/sdk/utils/misc';
-
-import getKeyDoc from '@docknetwork/sdk/utils/vc/helpers';
-import * as bs58 from 'base58-universal';
+import { u8aToHex, hexToU8a, stringToU8a } from '@polkadot/util';
 
 import {
   getKeypairFromDoc,
@@ -68,7 +56,6 @@ function encodeAddressType(publicKey, type) {
 }
 
 function verifyAddress(keyDoc, polkadotKeys) {
-  console.log('keyDoc', keyDoc)
   if (typeof keyDoc.publicKeyBase58 !== 'string') {
     throw new Error(`keydoc required publicKeyBase58 as string, got ${keyDoc.publicKeyBase58}`)
   }
@@ -207,12 +194,4 @@ describe('Wallet - Key generation', () => {
     expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
     await signAndVerifyTest(generatedKeypair, polkadotKeys);
   });
-
-  // test('Can generate ecdsa key that matches polkadot equivalent', async () => {
-  //   const generatedKeypair = await getKeypairFromDerivedKey(hexToU8a(keySeedHex), 'EcdsaSecp256k1VerificationKey2019');
-  //   const polkadotKeys = dock.keyring.addFromUri(keySeedHex, {}, 'ecdsa');
-  //   const publicKey = u8aToHex(base58btc.decode(generatedKeypair.publicKeyBase58));
-  //   expect(publicKey).toEqual(u8aToHex(polkadotKeys.publicKey));
-  //   await signAndVerifyTest(generatedKeypair, polkadotKeys);
-  // });
 });

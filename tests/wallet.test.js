@@ -36,70 +36,70 @@ const unlockedWalletObject = {
   contents: [expect.anything()],
 };
 
-// describe('Wallet - Basic functionality', () => {
-//   const wallet = new DockWallet(WALLET_DEFAULT_ID);
+describe('Wallet - Basic functionality', () => {
+  const wallet = new DockWallet(WALLET_DEFAULT_ID);
 
-//   test('Can add a credential', () => {
-//     wallet.add(WALLET_SIGNED_CREDENTIAL);
-//     expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
-//   });
+  test('Can add a credential', () => {
+    wallet.add(WALLET_SIGNED_CREDENTIAL);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
+  });
 
-//   test('Can lock a wallet', async () => {
-//     await wallet.lock(WALLET_PASSWORD);
-//     expect(wallet.status).toBe(DockWallet.Locked);
-//     expect(wallet.contents[0].ciphertext).toBeDefined();
-//   });
+  test('Can lock a wallet', async () => {
+    await wallet.lock(WALLET_PASSWORD);
+    expect(wallet.status).toBe(DockWallet.Locked);
+    expect(wallet.contents[0].ciphertext).toBeDefined();
+  });
 
-//   test('Can not add or remove when a wallet is locked', () => {
-//     expect(() => wallet.add(WALLET_SIGNED_CREDENTIAL)).toThrow(/Wallet is locked/);
-//     expect(() => wallet.remove(WALLET_SIGNED_CREDENTIAL)).toThrow(/Wallet is locked/);
-//   });
+  test('Can not add or remove when a wallet is locked', () => {
+    expect(() => wallet.add(WALLET_SIGNED_CREDENTIAL)).toThrow(/Wallet is locked/);
+    expect(() => wallet.remove(WALLET_SIGNED_CREDENTIAL)).toThrow(/Wallet is locked/);
+  });
 
-//   test('Can unlock a wallet', async () => {
-//     await wallet.unlock(WALLET_PASSWORD);
-//     expect(wallet.status).toBe(DockWallet.Unlocked);
-//     expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
-//   });
+  test('Can unlock a wallet', async () => {
+    await wallet.unlock(WALLET_PASSWORD);
+    expect(wallet.status).toBe(DockWallet.Unlocked);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(true);
+  });
 
-//   test('Unlocked JSON representation', () => {
-//     const walletJSON = wallet.toJSON();
-//     expect(walletJSON).toMatchObject(unlockedWalletObject);
-//   });
+  test('Unlocked JSON representation', () => {
+    const walletJSON = wallet.toJSON();
+    expect(walletJSON).toMatchObject(unlockedWalletObject);
+  });
 
-//   test('Can add and remove an anchor', async () => {
-//     wallet.add(WALLET_TESTNET_ANCHOR);
-//     expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(true);
+  test('Can add and remove an anchor', async () => {
+    wallet.add(WALLET_TESTNET_ANCHOR);
+    expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(true);
 
-//     // ensure that the anchor is correlated to the signed credential
-//     const credentialAnchors = await getCredentialAnchors(WALLET_SIGNED_CREDENTIAL, wallet);
-//     const credentialAnchor = credentialAnchors[0];
-//     expect(credentialAnchor).toBeDefined();
-//     expect(credentialAnchor.id).toEqual(WALLET_TESTNET_ANCHOR.id);
+    // ensure that the anchor is correlated to the signed credential
+    const credentialAnchors = await getCredentialAnchors(WALLET_SIGNED_CREDENTIAL, wallet);
+    const credentialAnchor = credentialAnchors[0];
+    expect(credentialAnchor).toBeDefined();
+    expect(credentialAnchor.id).toEqual(WALLET_TESTNET_ANCHOR.id);
 
-//     wallet.remove(WALLET_TESTNET_ANCHOR.id);
-//     expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(false);
-//   });
+    wallet.remove(WALLET_TESTNET_ANCHOR.id);
+    expect(wallet.has(WALLET_TESTNET_ANCHOR.id)).toBe(false);
+  });
 
-//   test('Can remove a credential', () => {
-//     wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
-//     expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
-//   });
+  test('Can remove a credential', () => {
+    wallet.remove(WALLET_SIGNED_CREDENTIAL.id);
+    expect(wallet.has(WALLET_SIGNED_CREDENTIAL.id)).toBe(false);
+  });
 
-//   test('Can query for contents', async () => {
-//     // Add two items to search between
-//     wallet.add(WALLET_SIGNED_CREDENTIAL);
-//     wallet.add(WALLET_UNSIGNED_CREDENTIAL);
+  test('Can query for contents', async () => {
+    // Add two items to search between
+    wallet.add(WALLET_SIGNED_CREDENTIAL);
+    wallet.add(WALLET_UNSIGNED_CREDENTIAL);
 
-//     // Query for item 2's ID
-//     const queryResult = await wallet.query({
-//       equals: {
-//         'content.id': WALLET_UNSIGNED_CREDENTIAL.id,
-//       },
-//     });
+    // Query for item 2's ID
+    const queryResult = await wallet.query({
+      equals: {
+        'content.id': WALLET_UNSIGNED_CREDENTIAL.id,
+      },
+    });
 
-//     expect(queryResult[0].id).toEqual(WALLET_UNSIGNED_CREDENTIAL.id);
-//   });
-// });
+    expect(queryResult[0].id).toEqual(WALLET_UNSIGNED_CREDENTIAL.id);
+  });
+});
 
 describe('Wallet - Import/Export', () => {
   const wallet = new DockWallet();
@@ -107,8 +107,6 @@ describe('Wallet - Import/Export', () => {
   test('Can import, export and re-import a wallet', async () => {
     // Import wallet from file
     await wallet.import(WALLET_LOCKED, 'Testbuild155!');
-
-    console.log('wallet', wallet)
 
     // // Get exported credential
     // const exportedWallet = await wallet.export(WALLET_PASSWORD);

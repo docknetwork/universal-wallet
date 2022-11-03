@@ -1,9 +1,4 @@
 import {
-  issueCredential,
-  verifyCredential,
-} from '@docknetwork/sdk/utils/vc/credentials';
-
-import {
   contentsFromEncryptedWalletCredential,
   exportContentsAsCredential,
   lockWalletContents,
@@ -205,58 +200,6 @@ class DockWallet {
         }
       }
       return false;
-    });
-  }
-
-  async verify(credentialOrPresentation, options = {}) { // TODO: support presentations and pass domain, challenge etc in options
-    // TODO: should we have a default did resolver?
-    return await verifyCredential(credentialOrPresentation, {
-      resolver: null,
-      compactProof: true,
-      forceRevocationCheck: false,
-      ...options,
-    });
-  }
-
-  /**
-   * Takes a Verifiable Credential without a proof, and an options object to produce a Verifiable Credential.
-   * @param {object} credential - Verifiable Credential without a proof
-   * @param {object} options - Credential issuing options
-   * @return {object} An unlocked wallet JSON-LD representation
-   */
-  async issue(credential, options) {
-    const {
-      controller,
-      issuanceDate,
-      verificationMethod,
-    } = options;
-
-    // Get keypair instance from controller if it exists in wallet
-    const keyPairInstance = getKeypairFromController(this, controller);
-
-    // Create keypair document and signer
-    const keyDoc = getKeydocFromPair(keyPairInstance);
-    const signer = keyPairInstance.signer();
-
-    // Set verification method
-    if (verificationMethod) {
-      keyDoc.id = verificationMethod;
-    } else {
-      const pkEncoded = keyDoc.controller.split(':')[2];
-      keyDoc.id = `${keyDoc.controller}#${pkEncoded}`;
-    }
-
-    // SDK requires keypair property with sign method
-    // SDK mutates sign so that it passes data not object, this hack fixes that
-    async function sign(data) { return this.signer.sign({ data }); }
-    keyDoc.keypair = {
-      sign: sign.bind({ signer }),
-    };
-
-    // Sign the VC
-    return await issueCredential(keyDoc, {
-      ...credential,
-      issuanceDate: credential.issuanceDate || issuanceDate || new Date().toISOString(),
     });
   }
 
