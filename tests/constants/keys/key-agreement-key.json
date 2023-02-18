@@ -1,8 +1,8 @@
 {
   "@context": ["https://w3id.org/wallet/v1"],
-  "type": "X25519KeyAgreementKey2019",
+  "type": "X25519KeyAgreementKey2020",
   "id": "did:key:z6LSqN54mGZqf99ptTHyB3WWpwnrs25uAMrUgWsZiSLCdSDP#z6LSqN54mGZqf99ptTHyB3WWpwnrs25uAMrUgWsZiSLCdSDP",
   "controller": "did:key:z6LSqN54mGZqf99ptTHyB3WWpwnrs25uAMrUgWsZiSLCdSDP",
-  "publicKeyBase58": "EgtuExkyZgS5o4vCePzZWMaP1sYnTkgKoY9tDygfv4Sd",
-  "privateKeyBase58": "8qN1yDv3nif2Nrhg6zsB4nvg7nVQwm1aRzzKBMH2Z9qg"
+  "publicKeyMultibase": "z6LSqN54mGZqf99ptTHyB3WWpwnrs25uAMrUgWsZiSLCdSDP",
+  "privateKeyMultibase": "z3weecLZfDoMXCvQYUpvjTdvnw9g5zjRmh7eErSpJQwQjCar"
 }

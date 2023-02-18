@@ -1,4 +1,4 @@
-import { EdvClient, EdvDocument } from 'edv-client';
+import { EdvClient, EdvDocument } from '@digitalbazaar/edv-client';
 import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */

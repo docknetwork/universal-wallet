@@ -13,7 +13,7 @@ import MockHmac from '../tests/mock/hmac';
 
 import useStorageWallet from './use-storage-wallet';
 
-import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
+import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
 
 /**
   Currently this example requires that you run a secure data vault server locally
@@ -23,7 +23,7 @@ async function main() {
   // Ideally you would use a key management system
   // See readme for more: https://github.com/digitalbazaar/edv-client
   const hmac = await MockHmac.create(); // TODO: replace mock example with actual crypto classes
-  const keyAgreementKey = new X25519KeyAgreementKey2019(KEY_KAK);
+  const keyAgreementKey = X25519KeyAgreementKey2020.from(KEY_KAK);
   const keys = {
     keyAgreementKey,
     hmac,
