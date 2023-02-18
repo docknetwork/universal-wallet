@@ -49,10 +49,6 @@
     "docs": "mkdir out && touch out/.nojekyll && jsdoc src -r -c .jsdoc -d out/reference",
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
-  "resolutions": {
-    "jsonld": "^5.0.0",
-    "jsonld-signatures": "^9.3.1"
-  },
   "dependencies": {
     "@digitalbazaar/ed25519-verification-key-2018": "3.1.1",
     "@digitalbazaar/ed25519-verification-key-2020": "3.3.0",
