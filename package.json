@@ -53,7 +53,7 @@
     "@digitalbazaar/ed25519-verification-key-2018": "3.1.1",
     "@digitalbazaar/ed25519-verification-key-2020": "3.3.0",
     "@digitalbazaar/x25519-key-agreement-key-2019": "5.0.1",
-    "@digitalbazaar/x25519-key-agreement-key-2020": "3.0.1",
+    "@digitalbazaar/x25519-key-agreement-key-2020": "2.1.0",
     "@digitalbazaar/minimal-cipher": "4.0.2",
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
