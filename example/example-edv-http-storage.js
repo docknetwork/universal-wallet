@@ -3,7 +3,6 @@
 */
 import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
-import DockWallet from '../src/dock-wallet';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
 import MockHmac from '../tests/mock/hmac';
 

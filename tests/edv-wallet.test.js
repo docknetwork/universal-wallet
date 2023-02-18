@@ -34,10 +34,12 @@ describe('EDV Wallet', () => {
 
   let walletId;
   let edvWallet;
+  let storageInterface;
   beforeAll(async () => {
+    console.log('beforeAll')
     keys.hmac = await MockHmac.create();
 
-    const storageInterface = new EDVHTTPStorageInterface({
+    storageInterface = new EDVHTTPStorageInterface({
       url: 'http://localhost:8080',
       invocationSigner,
       keys,

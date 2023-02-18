@@ -2,7 +2,7 @@ import { EdvClient, EdvDocument } from '@digitalbazaar/edv-client';
 import StorageInterface from './storage-interface';
 
 /** EDV HTTP client storage implementation */
-class EDVHTTPStorageInterface extends StorageInterface {
+export default class EDVHTTPStorageInterface extends StorageInterface {
   constructor({
     url, keys, invocationSigner, capability, httpsAgent, defaultHeaders, keyResolver,
   }) {
@@ -220,5 +220,3 @@ class EDVHTTPStorageInterface extends StorageInterface {
     return id;
   }
 }
-
-export default EDVHTTPStorageInterface;

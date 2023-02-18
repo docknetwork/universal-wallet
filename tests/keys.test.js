@@ -1,5 +1,5 @@
-import DockWallet from '../src/index';
 import dock from '@docknetwork/sdk';
+import DockWallet from '../src/index';
 
 import {
   getKeypairFromDerivedKey,

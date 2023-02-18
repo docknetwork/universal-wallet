@@ -1,5 +1,5 @@
 /** This class contains the base methods that must be overridden in any storage interface */
-class StorageInterface {
+export default class StorageInterface {
   async get() {
     throw new Error('StorageInterface get method must be declared in inherited class');
   }
@@ -24,5 +24,3 @@ class StorageInterface {
     throw new Error('StorageInterface find method must be declared in inherited class');
   }
 }
-
-export default StorageInterface;
