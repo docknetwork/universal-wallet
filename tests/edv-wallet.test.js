@@ -1,4 +1,4 @@
-import { X25519KeyAgreementKey2019 } from '@digitalbazaar/x25519-key-agreement-key-2019';
+import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
 
 import EDVHTTPStorageInterface from '../src/storage/edv-http-storage';
 import { getKeypairFromDoc } from '../src/methods/keypairs';
@@ -21,7 +21,7 @@ const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 
 // These tests rely on a local EDV server running on port 8080
 describe('EDV Wallet', () => {
   // Get mock keys
-  const keyAgreementKey = new X25519KeyAgreementKey2019(KEY_KAK);
+  const keyAgreementKey = new X25519KeyAgreementKey2020(KEY_KAK);
   const keys = {
     keyAgreementKey,
     hmac: undefined,

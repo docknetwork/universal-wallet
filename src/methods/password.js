@@ -31,7 +31,7 @@ export async function passwordToKey(password, salt = 'salt', iterations = 100000
     .then((buffer) => new Uint8Array(buffer));
 }
 
-export async function passwordToKeypair(password) {
-  const derivedKey = await passwordToKey(password);
+export async function passwordToKeypair(password, salt, iterations, digest) {
+  const derivedKey = await passwordToKey(password, salt, iterations, digest);
   return await getKeypairFromDerivedKey(derivedKey);
 }

@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/universal-wallet",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -49,10 +49,6 @@
     "docs": "mkdir out && touch out/.nojekyll && jsdoc src -r -c .jsdoc -d out/reference",
     "type-check": "tsc --allowJs --checkJs --noEmit --moduleResolution node --resolveJsonModule --target ES6 --skipLibCheck true --allowSyntheticDefaultImports true"
   },
-  "resolutions": {
-    "jsonld": "^5.0.0",
-    "jsonld-signatures": "^9.3.1"
-  },
   "dependencies": {
     "@digitalbazaar/ed25519-verification-key-2018": "3.1.1",
     "@digitalbazaar/ed25519-verification-key-2020": "3.3.0",
@@ -62,6 +58,6 @@
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
     "base58-universal": "1.0.0",
-    "edv-client": "^8.0.0"
+    "@digitalbazaar/edv-client": "^14.1.1"
   }
 }
