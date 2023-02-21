@@ -987,14 +987,13 @@
     crypto-ld "^5.1.0"
     esm "^3.2.25"
 
-"@digitalbazaar/edv-client@^14.1.1":
-  version "14.1.1"
-  resolved "https://registry.yarnpkg.com/@digitalbazaar/edv-client/-/edv-client-14.1.1.tgz#5dd8dbbac0f165244aafa2407385c88b8d8e01c3"
-  integrity sha512-Sl112GJlyYHAbSAlHTLQo9BcpWiNFni/IlYp4wmZb+XIciwIs4Bl65R4EYRMo9SqovX62Mxwa9fHhS+zDGMBIA==
+"@digitalbazaar/edv-client@^11.3.2":
+  version "11.3.2"
+  resolved "https://registry.yarnpkg.com/@digitalbazaar/edv-client/-/edv-client-11.3.2.tgz#739ac97e79e0d8dd35e241d70271a6acb12d8a5a"
+  integrity sha512-XQcAVtY6nTPVi6Meu1E0ydj3aDZNUFX49Db9xpmBdZ3nhpjAarSpAWeNqJhYK6/Z/yBJ8B9zxQC1UpTm1bDHaw==
   dependencies:
     "@digitalbazaar/http-client" "^2.0.1"
     "@digitalbazaar/http-signature-zcap-invoke" "^5.0.1"
-    "@digitalbazaar/lru-memoize" "^2.2.0"
     "@digitalbazaar/minimal-cipher" "^4.0.1"
     "@digitalbazaar/security-document-loader" "^1.0.0"
     base58-universal "^1.0.0"
@@ -1049,7 +1048,7 @@
     esm "^3.2.22"
     pako "^1.0.11"
 
-"@digitalbazaar/lru-memoize@^2.0.0", "@digitalbazaar/lru-memoize@^2.2.0":
+"@digitalbazaar/lru-memoize@^2.0.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@digitalbazaar/lru-memoize/-/lru-memoize-2.2.0.tgz#0de3d5738ffc05b6cb4d6eda3dfd165761870b4a"
   integrity sha512-EoNfEJyelJYKoAlVKGt9X/d/AimGS7YV35Ae2mrIiu39JsCBVBoVSkXOKNJ9BeQeLI/rhjAYfVdHM/1SLT58FA==

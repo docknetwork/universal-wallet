@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/universal-wallet",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -58,6 +58,6 @@
     "@peculiar/webcrypto": "^1.1.6",
     "babel-polyfill": "^6.26.0",
     "base58-universal": "1.0.0",
-    "@digitalbazaar/edv-client": "^14.1.1"
+    "@digitalbazaar/edv-client": "^11.3.2"
   }
 }
