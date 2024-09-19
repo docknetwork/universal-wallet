@@ -10,7 +10,7 @@ jobs:
         with:
           node-version: '16.x'
       - run: yarn install --frozen-lockfile --ignore-scripts
-      - run: docker-compose -f ./docker-compose.edv.yml up -d
+      - run: docker compose -f ./docker-compose.edv.yml up -d
       - run: yarn build
       - run: yarn test
       - run: yarn run-examples
