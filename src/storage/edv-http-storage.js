@@ -179,6 +179,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
         url: `${this.serverUrl}/edvs`,
         controller,
         referenceId,
+        headers: this.defaultHeaders,
       });
     } catch (e) {
       return null;
@@ -214,7 +215,10 @@ class EDVHTTPStorageInterface extends StorageInterface {
       disabledinvocationSigner: invocationSigner || this.invocationSigner,
       disabledcapability: capability || this.capability,
       httpsAgent,
-      headers,
+      headers: {
+        ...this.defaultHeaders,
+        ...headers,
+      },
       config,
     });
     return id;
