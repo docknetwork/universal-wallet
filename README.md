@@ -1,6 +1,6 @@
-# Dock Universal Wallet Library
+# Dock Labs Universal Wallet Library
 
-This wallet is intended to implement the universl wallet W3C spec for storing credentials, keys, dids and more JSON-LD documents. It comes bundled with some storage interfaces, supports EDVs and is in use by the Dock Wallet app. Check the [examples](./examples) and [tests](./tests) folders for reference implementations. The library is currently in beta status.
+This wallet is intended to implement the universl wallet W3C spec for storing credentials, keys, dids and more JSON-LD documents. It comes bundled with some storage interfaces, supports EDVs and is in use by the Truvera Wallet app. Check the [examples](./examples) and [tests](./tests) folders for reference implementations. The library is currently in beta status.
 
 [Check out the documentation here](https://docknetwork.github.io/universal-wallet/reference/)
 
