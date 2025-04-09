@@ -1,6 +1,6 @@
 {
   "name": "@docknetwork/universal-wallet",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "license": "MIT",
   "type": "module",
   "main": "./dist/esm/index.js",
@@ -87,6 +87,6 @@
     "base58-universal": "2.0.0"
   },
   "optionalDependencies": {
-    "@digitalbazaar/edv-client": "^16.1.0"
+    "@digitalbazaar/edv-client": "^15.0.2"
   }
 }
