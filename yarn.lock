@@ -1043,7 +1043,7 @@
     base64url-universal "^2.0.0"
     crypto-ld "^7.0.0"
 
-"@digitalbazaar/edv-client@^15.0.2":
+"@digitalbazaar/edv-client@15.0.2":
   version "15.0.2"
   resolved "https://registry.yarnpkg.com/@digitalbazaar/edv-client/-/edv-client-15.0.2.tgz#8ba5ce358027eceb533ca9aa492e83890bfbe490"
   integrity sha512-wZN3pjEJKyGcvjxbZvKKDcOKVKNwq4bXkO51FGZgMCtwKe0hRsDOIYQfo2Q978MCYApsAIWb2naSO0sxaWmUYg==
