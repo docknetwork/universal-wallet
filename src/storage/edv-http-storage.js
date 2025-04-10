@@ -1,5 +1,19 @@
 import { EdvClient, EdvDocument } from '@digitalbazaar/edv-client';
+import * as base64url from 'base64url-universal';
+
 import StorageInterface from './storage-interface';
+
+async function blindString(hmac, value) {
+  // convert value to Uint8Array
+  const data = new TextEncoder().encode(value);
+  const signature = await hmac.sign({data});
+  if (typeof signature === 'string') {
+    // presume base64url-encoded
+    return signature;
+  }
+  // base64url-encode Uint8Array signature
+  return base64url.encode(signature);
+}
 
 /** EDV HTTP client storage implementation */
 class EDVHTTPStorageInterface extends StorageInterface {
@@ -143,7 +157,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
     }
   }
 
-  connectTo(id) {
+  connectTo(id, attributeVersion = 1) {
     if (this.client) {
       throw new Error('Already connected');
     }
@@ -154,6 +168,7 @@ class EDVHTTPStorageInterface extends StorageInterface {
 
     const { keyAgreementKey, hmac } = this.keys;
     this.client = new EdvClient({
+      _attributeVersion: attributeVersion,
       defaultHeaders: this.defaultHeaders,
       keyResolver: this.keyResolver,
       httpsAgent: this.httpsAgent,
@@ -161,6 +176,9 @@ class EDVHTTPStorageInterface extends StorageInterface {
       hmac,
       id,
     });
+
+    this.client.indexHelper._blindString = blindString.bind(this.client.indexHelper);
+
     this.documents = new Map();
   }
 

@@ -1,5 +1,4 @@
 import DockWallet from '../src/index';
-import dock from '@docknetwork/sdk';
 
 import {
   getKeypairFromDerivedKey,
@@ -18,10 +17,6 @@ import {
 
 describe('Wallet - Key storage and usage', () => {
   const wallet = new DockWallet();
-
-  beforeAll(async () => {
-    await dock.initKeyring();
-  });
 
   test('Can add a local base58 key', () => {
     wallet.add(KEY_LOCAL);
@@ -47,7 +42,6 @@ describe('Wallet - Key generation', () => {
   let derivedKey;
   beforeAll(async () => {
     derivedKey = await passwordToKey('testpass');
-    await dock.initKeyring();
   });
 
   test('Can generate X25519KeyAgreementKey2019', async () => {

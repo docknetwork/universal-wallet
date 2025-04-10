@@ -1,4 +1,4 @@
-const NodeEnvironment = require('jest-environment-node');
+import { TestEnvironment as NodeEnvironment } from "jest-environment-node";
 
 class MyEnvironment extends NodeEnvironment {
   constructor(config, context) {
@@ -12,9 +12,10 @@ class MyEnvironment extends NodeEnvironment {
           ArrayBuffer,
           TextDecoder,
           TextEncoder,
+          Buffer,
         },
       },
-      context,
+      context
     );
   }
 
@@ -23,4 +24,4 @@ class MyEnvironment extends NodeEnvironment {
   async teardown() {}
 }
 
-module.exports = MyEnvironment;
+export default MyEnvironment;

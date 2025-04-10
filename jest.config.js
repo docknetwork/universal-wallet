@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   bail: true,
   clearMocks: true,
   testTimeout: 30000,
