@@ -6,7 +6,7 @@ import StorageInterface from './storage-interface';
 async function blindString(hmac, value) {
   // convert value to Uint8Array
   const data = new TextEncoder().encode(value);
-  const signature = await hmac.sign({data});
+  const signature = await hmac.sign({ data });
   if (typeof signature === 'string') {
     // presume base64url-encoded
     return signature;
