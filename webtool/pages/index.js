@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import Head from 'next/head';
 
-import DockWallet from '@docknetwork/wallet';
+import DockWallet from '@docknetwork/universal-wallet';
 
 import { useDropzone } from 'react-dropzone';
 import lockedJSON from './wallet.json';

@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@docknetwork/wallet": "^0.1.0",
+    "@docknetwork/universal-wallet": "^3.3.4",
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0",
